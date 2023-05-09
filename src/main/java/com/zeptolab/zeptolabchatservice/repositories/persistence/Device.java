@@ -39,9 +39,7 @@ public class Device extends BaseEntity {
 
 
     public Device(final String name,
-                  final DeviceType type,
-                  final String osVersion,
-                  final String appVersion) {
+                  final DeviceType type) {
         this.name = name;
         this.type = type;
 

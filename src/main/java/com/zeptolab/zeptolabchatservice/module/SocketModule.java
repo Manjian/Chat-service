@@ -14,15 +14,16 @@ import org.springframework.stereotype.Component;
 public class SocketModule {
 
 
-    private final SocketIOServer server;
+    private final SocketIOServer socketIOServer;
     private final SocketService socketService;
 
-    public SocketModule(SocketIOServer server, SocketService socketService) {
-        this.server = server;
+    public SocketModule(final SocketIOServer socketIOServer,
+                        final SocketService socketService) {
+        this.socketIOServer = socketIOServer;
         this.socketService = socketService;
-        server.addConnectListener(onConnected());
-        server.addDisconnectListener(onDisconnected());
-        server.addEventListener("send_message", Message.class, onChatReceived());
+        socketIOServer.addConnectListener(onConnected());
+        socketIOServer.addDisconnectListener(onDisconnected());
+        socketIOServer.addEventListener("send_message", Message.class, onChatReceived());
 
     }
 
