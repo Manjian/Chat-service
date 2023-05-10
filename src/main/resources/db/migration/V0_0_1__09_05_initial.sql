@@ -27,7 +27,7 @@ create table t_users
 
 
     constraint uk_users_id_deleted unique (id, deleted)
-    constraint fk_users_channel_id foreign key (channel_id) references t_channel (id)
+--     constraint fk_users_channel_id foreign key (channel_id) references t_channel (id)
 
 );
 
