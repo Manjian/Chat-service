@@ -1,4 +1,6 @@
 package com.zeptolab.zeptolabchatservice.data;
 
-public record LoginData(String name, String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginData(@NotBlank String name, @NotBlank String password) {
 }

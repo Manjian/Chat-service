@@ -17,11 +17,9 @@ public class SocketService {
 
 
     public void sendSocketMessage(SocketIOClient senderClient, Message messageData, String room) {
-        for (
-                SocketIOClient client : senderClient.getNamespace().getRoomOperations(room).getClients()) {
+        for (SocketIOClient client : senderClient.getNamespace().getRoomOperations(room).getClients()) {
             if (!client.getSessionId().equals(senderClient.getSessionId())) {
-                client.sendEvent("read_message",
-                        messageData);
+                client.sendEvent("read_message", messageData);
             }
         }
     }

@@ -8,9 +8,12 @@ import lombok.Setter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -37,15 +40,19 @@ public class User extends BaseEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "session_id", nullable = false)
+    private String sessionId;
+
 
     @Setter(AccessLevel.NONE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
     private List<Device> devices = new ArrayList<>();
 
 
-    public User(final String name, final String password) {
+    public User(final String name, final String password, final String  sessionId) {
         this.name = name;
         this.password = password;
+        this.sessionId = sessionId;
     }
 
     public void addDevice(final Device device) {

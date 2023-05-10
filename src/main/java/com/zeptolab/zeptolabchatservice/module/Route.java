@@ -3,12 +3,10 @@ package com.zeptolab.zeptolabchatservice.module;
 public enum Route {
 
 
-    LOGIN("login"), JOIN("join"),
-
+    LOGIN("login"),
+    JOIN("join"),
     DISCONNECT("disconnect"),
-
     LIST("list"),
-
     USER("users");
 
 

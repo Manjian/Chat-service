@@ -18,6 +18,7 @@ create table t_users
     id                        varchar(36) primary key,
     name                      varchar(64) not null,
     password                  varchar(64) not null,
+    session_id                 varchar(36) not null,
 
     channel_id                varchar(36) references t_channel (id) on update cascade on delete cascade,
 
