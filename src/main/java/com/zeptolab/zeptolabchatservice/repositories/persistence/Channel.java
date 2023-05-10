@@ -1,6 +1,10 @@
 package com.zeptolab.zeptolabchatservice.repositories.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,41 +20,24 @@ import java.util.List;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "t_users",
-        uniqueConstraints = {@UniqueConstraint(name = "uk_users_id_deleted", columnNames = {"id", "deleted"})}
-)
-public class User extends BaseEntity {
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "channel_id",
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_users_channel_id"),
-            nullable = false)
-    private Channel channel;
-
+public class Channel extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "password", nullable = false)
-    private String password;
-
 
     @Setter(AccessLevel.NONE)
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Device> devices = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "channel", fetch = FetchType.LAZY)
+    private List<User> users = new ArrayList<>();
 
 
-    public User(final String name, final String password) {
+    public Channel(final String name) {
         this.name = name;
-        this.password = password;
     }
 
-    public void addDevice(final Device device) {
-        device.setUser(this);
-        this.devices.add(device);
+    public void addUser(final User user) {
+        this.users.add(user);
     }
 
 
@@ -64,12 +51,11 @@ public class User extends BaseEntity {
             return false;
         }
 
-        final User user = (User) o;
+        final Channel channel = (Channel) o;
 
         return new EqualsBuilder()
                 .appendSuper(true)
-                .append(this.name, user.name)
-                .append(this.password, user.password)
+                .append(this.name, name)
                 .isEquals();
     }
 
@@ -78,7 +64,6 @@ public class User extends BaseEntity {
         return new HashCodeBuilder(INIT_ODD, MULTIPLY_ODD)
                 .appendSuper(super.hashCode())
                 .append(this.name)
-                .append(this.password)
                 .toHashCode();
     }
 
@@ -90,3 +75,4 @@ public class User extends BaseEntity {
                 .toString();
     }
 }
+
