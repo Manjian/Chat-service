@@ -1,4 +1,3 @@
 package com.zeptolab.zeptolabchatservice.data;
 
-public record EmptyEvent() {
-}
+public record EmptyEvent() {}

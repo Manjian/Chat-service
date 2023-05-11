@@ -69,7 +69,7 @@ public class Channel extends BaseEntity {
 
         return new EqualsBuilder()
                 .appendSuper(true)
-                .append(this.name, name)
+                .append(this.name, channel.name)
                 .isEquals();
     }
 

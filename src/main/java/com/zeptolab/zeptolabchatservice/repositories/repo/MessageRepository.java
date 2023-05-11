@@ -11,7 +11,6 @@ import java.util.UUID;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-
     Optional<List<Message>> getMessagesByChannelId(final UUID channelId);
 
 }
