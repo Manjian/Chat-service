@@ -29,8 +29,7 @@ public class User extends BaseEntity {
     @JoinColumn(
             name = "channel_id",
             referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_users_channel_id"),
-            nullable = false)
+            foreignKey = @ForeignKey(name = "fk_users_channel_id"))
     private Channel channel;
 
 

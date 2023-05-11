@@ -36,7 +36,7 @@ create table t_users
     password                  varchar(64) not null,
     session_id                varchar(36) not null,
 
-    channel_id              varchar(36) references t_channel (id) on update cascade on delete cascade,
+    channel_id                varchar(36) references t_channel (id) on update cascade on delete cascade,
 
     created                   timestamp   not null default current_timestamp,
     updated                   timestamp   not null default current_timestamp,
