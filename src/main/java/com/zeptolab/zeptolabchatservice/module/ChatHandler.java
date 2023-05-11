@@ -12,6 +12,7 @@ import com.zeptolab.zeptolabchatservice.data.LoginData;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Device;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
+import com.zeptolab.zeptolabchatservice.service.ChannelService;
 import com.zeptolab.zeptolabchatservice.service.UserService;
 import com.zeptolab.zeptolabchatservice.service.SocketService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,27 +30,33 @@ public class ChatHandler {
 
     private final UserService userService;
 
+    private final ChannelService channelService;
+
     private final ObjectMapper objectMapper;
 
 
     public ChatHandler(final SocketIOServer server,
                        final SocketService socketService,
                        final UserService userService,
+                       final ChannelService channelService,
                        final ObjectMapper objectMapper) {
         this.server = server;
         this.socketService = socketService;
         this.objectMapper = objectMapper;
         this.userService = userService;
+        this.channelService = channelService;
         server.addConnectListener(onConnected());
         server.addDisconnectListener(onDisconnected());
         server.addEventListener(Route.JOIN.getStringValue(), JoinEvent.class, onChatReceived());
 
     }
 
-
     private DataListener<JoinEvent> onChatReceived() {
         return (client, data, ackSender) -> {
-           final User user = userService.getUserBySessionId(client.getSessionId().toString());
+            final User user = userService.getUserBySessionId(client.getSessionId().toString());
+            final Channel channel = channelService.joinOrCreate(user, data);
+            client.joinRoom(channel.getName());
+            client.sendEvent("History",channel.getMessages());
         };
     }
 
@@ -85,8 +92,8 @@ public class ChatHandler {
                 final Channel channel = hasAccount.get().getChannel();
                 if (channel != null) {
                     client.joinRoom(channel.getName());
-                    socketService.saveInfoMessage(client,
-                            String.format(Constants.WELCOME_MESSAGE, hasAccount.get().getName()), channel.getName());
+//                    socketService.saveInfoMessage(client,
+//                            String.format(Constants.WELCOME_MESSAGE, hasAccount.get().getName()), channel.getName());
                 }
                 log.info("new user has been connect");
 

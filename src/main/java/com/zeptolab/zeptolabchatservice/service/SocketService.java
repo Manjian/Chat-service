@@ -24,22 +24,22 @@ public class SocketService {
         }
     }
 
-    public void saveMessage(SocketIOClient senderClient, Message messageData) {
-        Message storedMessageData = messageService.saveMessage(Message.builder()
-                .messageType(MessageType.CLIENT)
-                .content(messageData.getContent())
-                .room(messageData.getRoom())
-                .user(messageData.getUser())
-                .build());
-        sendSocketMessage(senderClient, storedMessageData, messageData.getRoom());
-    }
+//    public void saveMessage(SocketIOClient senderClient, Message messageData) {
+//        Message storedMessageData = messageService.saveMessage(Message.builder()
+//                .messageType(MessageType.CLIENT)
+//                .content(messageData.getContent())
+//                .room(messageData.getRoom())
+//                .user(messageData.getUser())
+//                .build());
+//        sendSocketMessage(senderClient, storedMessageData, messageData.getRoom());
+//    }
 
-    public void saveInfoMessage(SocketIOClient senderClient, String message, String room) {
-        Message storedMessageData = messageService.saveMessage(Message.builder()
-                .messageType(MessageType.SERVER)
-                .content(message)
-                .room(room)
-                .build());
-        sendSocketMessage(senderClient, storedMessageData, room);
-    }
+//    public void saveInfoMessage(SocketIOClient senderClient, String message, String room) {
+//        Message storedMessageData = messageService.saveMessage(Message.builder()
+//                .messageType(MessageType.SERVER)
+//                .content(message)
+//                .room(room)
+//                .build());
+//        sendSocketMessage(senderClient, storedMessageData, room);
+//    }
 }

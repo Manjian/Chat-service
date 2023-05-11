@@ -1,12 +1,10 @@
 package com.zeptolab.zeptolabchatservice.service;
 
-import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import com.zeptolab.zeptolabchatservice.repositories.MessageRepository;
+import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -16,11 +14,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
 
 
-    public List<Message> getMessages(String room) {
-        return messageRepository.findAllByRoom(room);
-    }
-
-    public Message saveMessage(Message messageData) {
+    public Message saveMessage(final Message messageData) {
         return messageRepository.save(messageData);
     }
 

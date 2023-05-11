@@ -35,11 +35,11 @@ public class Message extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "user_id",
+            name = "channel_id",
             referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_messages_user_id"),
+            foreignKey = @ForeignKey(name = "fk_messages_channel_id"),
             nullable = false)
-    private User user;
+    private Channel channel;
 
 
     @Enumerated(EnumType.STRING)
@@ -47,9 +47,6 @@ public class Message extends BaseEntity {
 
     @Column(name = "content", nullable = false)
     private String content;
-
-    @Column(name = "room", nullable = false)
-    private String room;
 
 
     @Override
@@ -66,10 +63,9 @@ public class Message extends BaseEntity {
 
         return new EqualsBuilder()
                 .appendSuper(true)
-                .append(this.user, message.user)
+                .append(this.channel, message.channel)
                 .append(this.content, message.content)
                 .append(this.messageType, message.messageType)
-                .append(this.room, message.room)
                 .isEquals();
     }
 
@@ -77,10 +73,9 @@ public class Message extends BaseEntity {
     public int hashCode() {
         return new HashCodeBuilder(INIT_ODD, MULTIPLY_ODD)
                 .appendSuper(super.hashCode())
-                .append(this.user)
+                .append(this.channel)
                 .append(this.content)
                 .append(this.messageType)
-                .append(this.room)
                 .toHashCode();
     }
 
@@ -88,9 +83,9 @@ public class Message extends BaseEntity {
     public String toString() {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
-                .append("user", this.user)
+                .append("channel", this.channel)
                 .append("content", this.content)
-                .append("room", this.room)
+                .append("messageType", this.messageType)
                 .toString();
     }
 
