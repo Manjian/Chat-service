@@ -1,9 +1,7 @@
 package com.zeptolab.zeptolabchatservice.service;
 
-import com.zeptolab.zeptolabchatservice.repositories.MessageRepository;
-import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
+import com.zeptolab.zeptolabchatservice.repositories.repo.MessageRepository;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

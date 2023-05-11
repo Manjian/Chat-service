@@ -1,14 +1,12 @@
 package com.zeptolab.zeptolabchatservice.service;
 
 import com.zeptolab.zeptolabchatservice.data.JoinEvent;
-import com.zeptolab.zeptolabchatservice.repositories.ChannelRepository;
+import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
-import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,33 +24,31 @@ public class ChannelService {
 
 
     public Channel joinOrCreate(final User user, @NotNull final JoinEvent data) throws IllegalAccessException {
-        final Optional<Channel> channel = channelRepository.getChannelByName(data.getChannel());
-        if (channel.isPresent()) {
-            if (channel.get().getUsers().size() < 10) {
-                channel.get().addUser(user);
-                return channelRepository.save(channel.get());
+        final Optional<Channel> channelOptional = channelRepository.getChannelByName(data.channel());
+        if (channelOptional.isPresent()) {
+            if (channelOptional.get().getUsers().size() < 10) {
+                channelOptional.get().addUser(user);
+                return channelRepository.save(channelOptional.get());
             } else {
-                throw new IllegalAccessException("user can't join to the target channel");
+                throw new IllegalAccessException("user can't join to the target channelOptional");
             }
         } else {
-            return createChannel(data);
+
+            Channel channel = createChannel(data);
+            channel.addUser(user);
+            return updateChannel(channel);
         }
 
 
     }
 
+    private Channel updateChannel(final Channel channel) {
+        return channelRepository.save(channel);
+    }
+
     private Channel createChannel(final JoinEvent data) {
-        final Channel channel = new Channel(data.getChannel());
+        final Channel channel = new Channel(data.channel());
         return this.channelRepository.save(channel);
     }
 
-    public List<Message> addUserToChannelHistory(final Channel channel) {
-        this.channelRepository.save(channel);
-        return this.getChannelMessage(channel);
-    }
-
-
-    public List<Message> getChannelMessage(final Channel channel) {
-        return messageService.getMessagesByChannelId(channel.getId());
-    }
 }

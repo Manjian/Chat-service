@@ -1,9 +1,8 @@
 package com.zeptolab.zeptolabchatservice.data;
 
-import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
 
-@Data
-public class JoinEvent {
-    private String channel;
+
+public record JoinEvent(@NotBlank String channel) {
 
 }

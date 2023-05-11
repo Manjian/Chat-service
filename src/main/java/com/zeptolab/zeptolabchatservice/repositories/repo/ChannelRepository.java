@@ -1,4 +1,4 @@
-package com.zeptolab.zeptolabchatservice.repositories;
+package com.zeptolab.zeptolabchatservice.repositories.repo;
 
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;

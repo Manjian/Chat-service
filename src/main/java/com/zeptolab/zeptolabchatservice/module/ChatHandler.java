@@ -6,9 +6,8 @@ import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zeptolab.zeptolabchatservice.constants.Constants;
 import com.zeptolab.zeptolabchatservice.data.JoinEvent;
-import com.zeptolab.zeptolabchatservice.data.LoginData;
+import com.zeptolab.zeptolabchatservice.data.LoginEvent;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Device;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
@@ -26,85 +25,82 @@ import java.util.*;
 public class ChatHandler {
 
 
-    private final SocketIOServer server;
     private final SocketService socketService;
 
     private final UserService userService;
 
     private final ChannelService channelService;
 
-    private final ObjectMapper objectMapper;
-
 
     public ChatHandler(final SocketIOServer server,
                        final SocketService socketService,
                        final UserService userService,
-                       final ChannelService channelService,
-                       final ObjectMapper objectMapper) {
-        this.server = server;
+                       final ChannelService channelService) {
         this.socketService = socketService;
-        this.objectMapper = objectMapper;
         this.userService = userService;
         this.channelService = channelService;
-        server.addConnectListener(onConnected());
-        server.addDisconnectListener(onDisconnected());
-        server.addEventListener(Route.JOIN.getStringValue(), JoinEvent.class, onChatReceived());
-
+        addListener(server);
     }
 
-    private DataListener<JoinEvent> onChatReceived() {
-        return (client, data, ackSender) -> {
-            final User user = userService.getUserBySessionId(client.getSessionId().toString());
-            final Channel channel = channelService.joinOrCreate(user, data);
-            channel.addUser(user);
+    private void addListener(final SocketIOServer server) {
+        server.addConnectListener(onConnected());
+        server.addDisconnectListener(onDisconnected());
+        server.addEventListener(Route.LOGIN.getStringValue(), LoginEvent.class, onLoginEventReceived());
+        server.addEventListener(Route.JOIN.getStringValue(), JoinEvent.class, onJoinEventReceived());
+        server.addEventListener(Route.LEAVE.getStringValue(), LeaveEvent.class, onLeaveEventReceived());
+    }
 
-            final List<Message> list = this.channelService.addUserToChannelHistory(channel);
-            client.joinRoom(channel.getName());
-            client.sendEvent("History", list);
+
+    private DataListener<LoginEvent> onLoginEventReceived() {
+        return (client, data, ackSender) -> {
+            final Device device = new Device(client.getRemoteAddress().toString());
+            final Optional<User> hasAccount = userService.insertOrUpdate(data, device, client.getSessionId().toString());
+            if (hasAccount.isEmpty()) {
+                return;
+            }
+            final Channel channel = hasAccount.get().getChannel();
+            if (channel != null) {
+                client.joinRoom(channel.getName());
+            }
+            log.info("new user has been connect");
+        };
+    }
+
+    private DataListener<JoinEvent> onJoinEventReceived() {
+        return (client, data, ackSender) -> {
+            final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
+            if (user.isPresent()) {
+                final Channel channel = channelService.joinOrCreate(user.get(), data);
+                final List<Message> list = channel.getMessages();
+                client.joinRoom(channel.getName());
+                client.sendEvent("History", list);
+            }
+
+        };
+    }
+
+    private DataListener<LeaveEvent> onLeaveEventReceived() {
+        return (client, data, ackSender) -> {
+            final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
+            if (user.isPresent()) {
+                final Channel channel = user.get().getChannel();
+                if (channel != null) {
+                    final String channelName = channel.getName();
+                    final Optional<User> updatedUser = this.userService.terminateUserAccessToChannel(user.get());
+                    if (updatedUser.isPresent()){
+                        client.leaveRoom(channelName);
+                    }
+
+                }
+
+            }
         };
     }
 
 
     private ConnectListener onConnected() {
         return client -> {
-
             final Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
-            final Optional<String> described = String.join("", params.get(Route.LOGIN.getStringValue())).describeConstable();
-            final boolean hasLogin = described.isPresent();
-
-            if (!hasLogin || described.get().equals("undefined")) {
-                client.disconnect();
-                return;
-            }
-
-            final LoginData loginData;
-
-            try {
-                loginData = objectMapper.readValue(described.get(), LoginData.class);
-                final Device device = new Device(client.getRemoteAddress().toString());
-
-                final Optional<User> hasAccount = userService.insertOrUpdate(
-                        loginData,
-                        device,
-                        client.getSessionId().toString());
-
-                if (hasAccount.isEmpty()) {
-                    client.disconnect();
-                    return;
-                }
-
-                final Channel channel = hasAccount.get().getChannel();
-                if (channel != null) {
-                    client.joinRoom(channel.getName());
-//                    socketService.saveInfoMessage(client,
-//                            String.format(Constants.WELCOME_MESSAGE, hasAccount.get().getName()), channel.getName());
-                }
-                log.info("new user has been connect");
-
-            } catch (JsonProcessingException e) {
-                client.disconnect();
-                throw new RuntimeException(e);
-            }
         };
 
     }
@@ -112,10 +108,6 @@ public class ChatHandler {
     private DisconnectListener onDisconnected() {
         return client -> {
             Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
-//            String room = String.join("", params.get("room"));
-//            String username = String.join("", params.get("username"));
-//            socketService.saveInfoMessage(client, String.format(Constants.DISCONNECT_MESSAGE, username), room);
-//            log.info("Socket ID[{}] - room[{}] - username [{}]  discnnected to chat module through", client.getSessionId().toString(), room, username);
         };
     }
 

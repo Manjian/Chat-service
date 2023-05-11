@@ -1,4 +1,4 @@
-package com.zeptolab.zeptolabchatservice.repositories;
+package com.zeptolab.zeptolabchatservice.repositories.repo;
 
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     Optional<User> getUserByName(String name);
-    User getUserBySessionId(String sessionId);
+    Optional<User> getUserBySessionId(String sessionId);
 
 }
