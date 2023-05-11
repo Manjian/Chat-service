@@ -45,10 +45,12 @@ public class Channel extends BaseEntity {
     }
 
     public void addUser(final User user) {
+        user.setChannel(this);
         this.users.add(user);
     }
 
     public void addMessage(final Message message) {
+        message.setChannel(this);
         this.messages.add(message);
     }
 

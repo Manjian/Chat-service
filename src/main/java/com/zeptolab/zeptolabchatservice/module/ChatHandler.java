@@ -11,6 +11,7 @@ import com.zeptolab.zeptolabchatservice.data.JoinEvent;
 import com.zeptolab.zeptolabchatservice.data.LoginData;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Device;
+import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import com.zeptolab.zeptolabchatservice.service.ChannelService;
 import com.zeptolab.zeptolabchatservice.service.UserService;
@@ -55,8 +56,11 @@ public class ChatHandler {
         return (client, data, ackSender) -> {
             final User user = userService.getUserBySessionId(client.getSessionId().toString());
             final Channel channel = channelService.joinOrCreate(user, data);
+            channel.addUser(user);
+
+            final List<Message> list = this.channelService.addUserToChannelHistory(channel);
             client.joinRoom(channel.getName());
-            client.sendEvent("History",channel.getMessages());
+            client.sendEvent("History", list);
         };
     }
 

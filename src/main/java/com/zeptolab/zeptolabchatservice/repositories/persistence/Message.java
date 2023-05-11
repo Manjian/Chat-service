@@ -43,6 +43,7 @@ public class Message extends BaseEntity {
 
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "messageType", nullable = false)
     private MessageType messageType;
 
     @Column(name = "content", nullable = false)
