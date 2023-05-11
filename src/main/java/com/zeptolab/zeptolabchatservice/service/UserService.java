@@ -7,8 +7,10 @@ import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -29,16 +31,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
-
     public Optional<User> getUserBySessionId(String sessionId) {
         return this.userRepository.getUserBySessionId(sessionId);
+    }
 
+    public List<String> getUsersByChannel(final String channel) {
+        return this.userRepository.getUsersByChannel_Name(channel).stream().map(User::getName).toList();
     }
 
     public Optional<User> terminateUserAccessToChannel(final User user) {
         user.setChannel(null);
         return Optional.of(this.save(user));
     }
+
     public Optional<User> insertOrUpdate(final LoginEvent loginEvent,
                                          final Device device,
                                          final String sessionId) {
@@ -62,6 +67,4 @@ public class UserService {
         }
 
     }
-
-
 }

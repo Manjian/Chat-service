@@ -4,10 +4,10 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zeptolab.zeptolabchatservice.data.JoinEvent;
+import com.zeptolab.zeptolabchatservice.data.EmptyEvent;
 import com.zeptolab.zeptolabchatservice.data.LoginEvent;
+import com.zeptolab.zeptolabchatservice.data.UserChannelEvent;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Device;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
@@ -19,10 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class ChatHandler {
+public class ChatHandler implements EventReceived {
 
 
     private final SocketService socketService;
@@ -45,13 +46,17 @@ public class ChatHandler {
     private void addListener(final SocketIOServer server) {
         server.addConnectListener(onConnected());
         server.addDisconnectListener(onDisconnected());
-        server.addEventListener(Route.LOGIN.getStringValue(), LoginEvent.class, onLoginEventReceived());
-        server.addEventListener(Route.JOIN.getStringValue(), JoinEvent.class, onJoinEventReceived());
-        server.addEventListener(Route.LEAVE.getStringValue(), LeaveEvent.class, onLeaveEventReceived());
+        server.addEventListener(Route.LOGIN.getStringValue(), LoginEvent.class, onLoginEvent());
+        server.addEventListener(Route.JOIN.getStringValue(), JoinEvent.class, onChannelJoinEven());
+        server.addEventListener(Route.LEAVE.getStringValue(), EmptyEvent.class, onChannelLeaveEvent());
+        server.addEventListener(Route.DISCONNECT.getStringValue(), EmptyEvent.class, onDisconnectEvent());
+        server.addEventListener(Route.LIST.getStringValue(), EmptyEvent.class, onGetChannelsListEvent());
+        server.addEventListener(Route.USER.getStringValue(), UserChannelEvent.class, OnGetUserListEvent());
     }
 
 
-    private DataListener<LoginEvent> onLoginEventReceived() {
+    @Override
+    public DataListener<LoginEvent> onLoginEvent() {
         return (client, data, ackSender) -> {
             final Device device = new Device(client.getRemoteAddress().toString());
             final Optional<User> hasAccount = userService.insertOrUpdate(data, device, client.getSessionId().toString());
@@ -63,23 +68,27 @@ public class ChatHandler {
                 client.joinRoom(channel.getName());
             }
             log.info("new user has been connect");
+
+            client.sendEvent("read_message", "Welcome " + data.name());
         };
     }
 
-    private DataListener<JoinEvent> onJoinEventReceived() {
+    @Override
+    public DataListener<JoinEvent> onChannelJoinEven() {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
                 final Channel channel = channelService.joinOrCreate(user.get(), data);
                 final List<Message> list = channel.getMessages();
                 client.joinRoom(channel.getName());
-                client.sendEvent("History", list);
+                client.sendEvent("read_message", list.toString());
             }
 
         };
     }
 
-    private DataListener<LeaveEvent> onLeaveEventReceived() {
+    @Override
+    public DataListener<EmptyEvent> onChannelLeaveEvent() {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
@@ -87,8 +96,9 @@ public class ChatHandler {
                 if (channel != null) {
                     final String channelName = channel.getName();
                     final Optional<User> updatedUser = this.userService.terminateUserAccessToChannel(user.get());
-                    if (updatedUser.isPresent()){
+                    if (updatedUser.isPresent()) {
                         client.leaveRoom(channelName);
+                        client.sendEvent("read_message", "leaved from " + channel.getName());
                     }
 
                 }
@@ -97,6 +107,31 @@ public class ChatHandler {
         };
     }
 
+    @Override
+    public DataListener<EmptyEvent> onDisconnectEvent() {
+        return (client, data, ackSender) -> {
+            final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
+            if (user.isPresent()) {
+                client.disconnect();
+            }
+        };
+    }
+
+    @Override
+    public DataListener<EmptyEvent> onGetChannelsListEvent() {
+        return (client, data, ackSender) -> {
+            final List<String> channels = channelService.getAllChannel();
+            client.sendEvent("read_message", channels);
+        };
+    }
+
+    @Override
+    public DataListener<UserChannelEvent> OnGetUserListEvent() {
+        return (client, data, ackSender) -> {
+            final List<String> list = userService.getUsersByChannel(data.channel());
+            client.sendEvent("read_message", list);
+        };
+    }
 
     private ConnectListener onConnected() {
         return client -> {

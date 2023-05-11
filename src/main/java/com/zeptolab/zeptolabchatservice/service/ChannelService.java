@@ -7,7 +7,9 @@ import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class ChannelService {
@@ -49,6 +51,10 @@ public class ChannelService {
     private Channel createChannel(final JoinEvent data) {
         final Channel channel = new Channel(data.channel());
         return this.channelRepository.save(channel);
+    }
+
+    public List<String> getAllChannel() {
+        return this.channelRepository.findAll().stream().map(Channel::getName).toList();
     }
 
 }

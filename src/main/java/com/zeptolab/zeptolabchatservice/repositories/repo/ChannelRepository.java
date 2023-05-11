@@ -2,6 +2,7 @@ package com.zeptolab.zeptolabchatservice.repositories.repo;
 
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
+import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,6 @@ public interface ChannelRepository extends JpaRepository<Channel, Long> {
 
 
     Optional<Channel> getChannelByName(final String name);
-
 
 
 }
