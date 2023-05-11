@@ -31,6 +31,8 @@ public class ChatHandler implements EventReceived {
 
     private final ChannelService channelService;
 
+    private static final String READ_MESSAGE = "read_message";
+
 
     public ChatHandler(final SocketIOServer server,
                        final SocketService socketService,
@@ -39,10 +41,10 @@ public class ChatHandler implements EventReceived {
         this.socketService = socketService;
         this.userService = userService;
         this.channelService = channelService;
-        addListener(server);
+        addListeners(server);
     }
 
-    private void addListener(final SocketIOServer server) {
+    private void addListeners(final SocketIOServer server) {
         server.addConnectListener(onConnected());
         server.addDisconnectListener(onDisconnected());
         server.addEventListener(Route.LOGIN.getStringValue(), LoginEvent.class, onLoginEvent());
@@ -50,12 +52,12 @@ public class ChatHandler implements EventReceived {
         server.addEventListener(Route.LEAVE.getStringValue(), EmptyEvent.class, onChannelLeaveEvent());
         server.addEventListener(Route.DISCONNECT.getStringValue(), EmptyEvent.class, onDisconnectEvent());
         server.addEventListener(Route.LIST.getStringValue(), EmptyEvent.class, onGetChannelsListEvent());
-        server.addEventListener(Route.USER.getStringValue(), UserChannelEvent.class, OnGetUserListEvent());
+        server.addEventListener(Route.USER.getStringValue(), UserChannelEvent.class, onGetUserListEvent());
     }
 
 
     @Override
-    public DataListener<LoginEvent> onLoginEvent() {
+    public synchronized DataListener<LoginEvent> onLoginEvent() {
         return (client, data, ackSender) -> {
             final Device device = new Device(client.getRemoteAddress().toString());
             final Optional<User> hasAccount = userService.insertOrUpdate(data, device, client.getSessionId().toString());
@@ -68,26 +70,26 @@ public class ChatHandler implements EventReceived {
             }
             log.info("new user has been connect");
 
-            client.sendEvent("read_message", "Welcome " + data.name());
+            client.sendEvent(READ_MESSAGE, "Welcome " + data.name());
         };
     }
 
     @Override
-    public DataListener<JoinEvent> onChannelJoinEven() {
+    public synchronized DataListener<JoinEvent> onChannelJoinEven() {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
                 final Channel channel = channelService.joinOrCreate(user.get(), data);
                 final List<Message> list = channel.getMessages();
                 client.joinRoom(channel.getName());
-                client.sendEvent("read_message", list.toString());
+                client.sendEvent(READ_MESSAGE, list.toString());
             }
 
         };
     }
 
     @Override
-    public DataListener<EmptyEvent> onChannelLeaveEvent() {
+    public synchronized DataListener<EmptyEvent> onChannelLeaveEvent() {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
@@ -97,7 +99,7 @@ public class ChatHandler implements EventReceived {
                     final Optional<User> updatedUser = this.userService.terminateUserAccessToChannel(user.get());
                     if (updatedUser.isPresent()) {
                         client.leaveRoom(channelName);
-                        client.sendEvent("read_message", "leaved from " + channel.getName());
+                        client.sendEvent(READ_MESSAGE, "leaved from " + channel.getName());
                     }
 
                 }
@@ -107,7 +109,7 @@ public class ChatHandler implements EventReceived {
     }
 
     @Override
-    public DataListener<EmptyEvent> onDisconnectEvent() {
+    public synchronized DataListener<EmptyEvent> onDisconnectEvent() {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
@@ -117,29 +119,29 @@ public class ChatHandler implements EventReceived {
     }
 
     @Override
-    public DataListener<EmptyEvent> onGetChannelsListEvent() {
+    public synchronized DataListener<EmptyEvent> onGetChannelsListEvent() {
         return (client, data, ackSender) -> {
             final List<String> channels = channelService.getAllChannel();
-            client.sendEvent("read_message", channels);
+            client.sendEvent(READ_MESSAGE, channels);
         };
     }
 
     @Override
-    public DataListener<UserChannelEvent> OnGetUserListEvent() {
+    public synchronized DataListener<UserChannelEvent> onGetUserListEvent() {
         return (client, data, ackSender) -> {
             final List<String> list = userService.getUsersByChannel(data.channel());
-            client.sendEvent("read_message", list);
+            client.sendEvent(READ_MESSAGE, list);
         };
     }
 
-    private ConnectListener onConnected() {
+    private synchronized ConnectListener onConnected() {
         return client -> {
             final Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
         };
 
     }
 
-    private DisconnectListener onDisconnected() {
+    private synchronized DisconnectListener onDisconnected() {
         return client -> {
             Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
         };

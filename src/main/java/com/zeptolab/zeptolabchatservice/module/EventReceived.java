@@ -15,7 +15,7 @@ public interface EventReceived  {
 
     DataListener<EmptyEvent> onGetChannelsListEvent();
 
-    DataListener<UserChannelEvent> OnGetUserListEvent();
+    DataListener<UserChannelEvent> onGetUserListEvent();
 
 
 }

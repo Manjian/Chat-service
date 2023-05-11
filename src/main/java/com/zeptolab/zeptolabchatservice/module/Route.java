@@ -11,19 +11,15 @@ public enum Route {
     USER("/users");
 
 
-    private String stringValue;
+    private final String stringValue;
 
 
-    Route(String stringValue) {
+    Route(final String stringValue) {
         this.stringValue = stringValue;
     }
 
     public String getStringValue() {
         return stringValue;
-    }
-
-    public void setStringValue(String stringValue) {
-        this.stringValue = stringValue;
     }
 
 
