@@ -1,7 +1,5 @@
 package com.zeptolab.zeptolabchatservice.handler;
 
-import com.corundumstudio.socketio.AckRequest;
-import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
@@ -28,7 +26,6 @@ import java.util.Optional;
 @Component
 @Slf4j
 public class ChatHandler implements EventReceived {
-
 
     private final ChatService chatService;
 
@@ -99,9 +96,9 @@ public class ChatHandler implements EventReceived {
                     client.joinRoom(channel.getName());
                     client.sendEvent(READ_MESSAGE, list.toString());
                     log.info("user join to new channel");
-                } catch (IllegalAccessException e){
+                } catch (IllegalAccessException e) {
                     log.warn("user is already in this channel");
-                    client.sendEvent(READ_MESSAGE,"User is already in the channel");
+                    client.sendEvent(READ_MESSAGE, "User is already in the channel");
                 }
             }
         };
@@ -123,11 +120,10 @@ public class ChatHandler implements EventReceived {
                             client.sendEvent(READ_MESSAGE, "leaved from " + channelName);
                         }
                     }
-                } catch (IllegalStateException e){
+                } catch (IllegalStateException e) {
                     log.warn("User don't have any channel access ");
                     client.sendEvent(READ_MESSAGE, "No channel available for leave");
                 }
-
             }
         };
     }
@@ -139,7 +135,6 @@ public class ChatHandler implements EventReceived {
             if (user.isPresent()) {
                 client.disconnect();
             }
-
         };
     }
 

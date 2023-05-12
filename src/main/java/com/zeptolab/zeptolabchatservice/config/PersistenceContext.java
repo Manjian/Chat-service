@@ -54,7 +54,6 @@ public class PersistenceContext {
         hikariConfig.setMaximumPoolSize(maxPoolSize);
         hikariConfig.setMinimumIdle(minIdle);
         hikariConfig.setDataSourceProperties(properties);
-
         return new HikariDataSource(hikariConfig);
     }
 

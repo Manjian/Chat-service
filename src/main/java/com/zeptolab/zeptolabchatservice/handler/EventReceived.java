@@ -3,7 +3,7 @@ package com.zeptolab.zeptolabchatservice.handler;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.zeptolab.zeptolabchatservice.data.*;
 
-public interface EventReceived  {
+public interface EventReceived {
 
     DataListener<LoginEvent> onLoginEvent();
 

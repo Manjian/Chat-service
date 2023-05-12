@@ -4,7 +4,6 @@ import com.zeptolab.zeptolabchatservice.data.JoinEvent;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import java.util.function.Consumer;
 public class ChannelService {
 
     private final ChannelRepository channelRepository;
-
 
     public ChannelService(final ChannelRepository channelRepository) {
         this.channelRepository = channelRepository;
@@ -45,9 +43,9 @@ public class ChannelService {
         }
     }
 
-    public void validateUserChannel(final User user,
-                                    final JoinEvent data,
-                                    final Consumer<String> consumer) {
+    public synchronized void validateUserChannel(final User user,
+                                                 final JoinEvent data,
+                                                 final Consumer<String> consumer) {
         final Channel currentChannel = user.getChannel();
         if (currentChannel != null) {
             final UUID currentChannelId = currentChannel.getId();
@@ -64,7 +62,7 @@ public class ChannelService {
     }
 
     @Transactional
-    public List<String> getChannelUsers(final String channelName) {
+    public synchronized List<String> getChannelUsers(final String channelName) {
         final Optional<Channel> channel = this.getChannelByName(channelName);
         return channel.map(value -> value.getUsers()
                         .stream()

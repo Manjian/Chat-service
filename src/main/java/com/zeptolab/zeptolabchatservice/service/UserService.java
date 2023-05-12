@@ -14,7 +14,6 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
 
-
     private final UserRepository userRepository;
 
     public UserService(final UserRepository userRepository) {
@@ -33,7 +32,6 @@ public class UserService {
         return this.userRepository.getUserBySessionId(sessionId);
     }
 
-
     @Transactional
     public synchronized Optional<User> terminateUserAccessToChannel(final User user) {
         user.setChannel(null);
@@ -50,10 +48,10 @@ public class UserService {
         if (userOptional.isPresent()) {
             user = userOptional.get();
             if (user.getPassword().equals(loginEvent.password())) {
-                if (sessionId.equals(user.getSessionId())){
+                if (sessionId.equals(user.getSessionId())) {
                     log.info("session id is the same {} ", sessionId);
                     return Optional.of(user);
-                } else  {
+                } else {
                     user.setSessionId(sessionId);
                     user.addDevice(device);
                     return Optional.of(this.save(user));
@@ -71,8 +69,8 @@ public class UserService {
 
     }
 
-    public void validateChannelAccess(final User user) throws IllegalStateException{
-        if (user.getChannel() == null){
+    public void validateChannelAccess(final User user) throws IllegalStateException {
+        if (user.getChannel() == null) {
             throw new IllegalStateException("No Channel for leave");
         }
     }

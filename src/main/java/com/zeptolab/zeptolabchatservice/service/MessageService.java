@@ -16,14 +16,13 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
-
     public MessageService(final MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
 
     }
 
     @Transactional
-    public List<ChatEvent> getMessagesByChannelId(final UUID channelId) {
+    public synchronized List<ChatEvent> getMessagesByChannelId(final UUID channelId) {
         final List<Message> list = this.messageRepository.getMessagesByChannelId(channelId);
         return list.stream().map(message -> new ChatEvent(message.getMessageType(),
                 message.getContent(),
