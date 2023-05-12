@@ -1,6 +1,6 @@
 package com.zeptolab.zeptolabchatservice.handler;
 
-public enum Route {
+public enum NameSpace {
 
 
     LOGIN("/login"),
@@ -9,13 +9,13 @@ public enum Route {
     DISCONNECT("/disconnect"),
     LIST("/list"),
     USER("/users"),
-    chat("/read_message");
+    CHAT("/read_message");
 
 
     private final String stringValue;
 
 
-    Route(final String stringValue) {
+    NameSpace(final String stringValue) {
         this.stringValue = stringValue;
     }
 

@@ -4,7 +4,6 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.zeptolab.zeptolabchatservice.data.ChatEvent;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
-import com.zeptolab.zeptolabchatservice.repositories.repo.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +14,9 @@ import java.util.Optional;
 @Slf4j
 public class ChatService {
 
-    private final MessageService messageService;
-
     private final ChannelService channelService;
 
-    public ChatService(final MessageService messageService, final ChannelService channelService) {
-        this.messageService = messageService;
+    public ChatService(final ChannelService channelService) {
         this.channelService = channelService;
     }
 
@@ -38,7 +34,6 @@ public class ChatService {
     public synchronized void saveMessage(final SocketIOClient senderClient, final ChatEvent chatEvent) {
 
         final Optional<Channel> channel = channelService.getChannelIdByName(chatEvent.channel());
-
         if (channel.isEmpty()) {
             log.error(" no channel name with {} ", chatEvent.channel());
             return;
@@ -53,5 +48,4 @@ public class ChatService {
         sendSocketMessage(senderClient, chatEvent);
         log.info("new message has been save and send");
     }
-
 }

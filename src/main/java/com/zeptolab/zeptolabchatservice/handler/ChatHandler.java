@@ -48,13 +48,13 @@ public class ChatHandler implements EventReceived {
     private void addListeners(final SocketIOServer server) {
         server.addConnectListener(onConnected());
         server.addDisconnectListener(onDisconnected());
-        server.addEventListener(Route.LOGIN.getStringValue(), LoginEvent.class, onLoginEvent());
-        server.addEventListener(Route.JOIN.getStringValue(), JoinEvent.class, onChannelJoinEven());
-        server.addEventListener(Route.LEAVE.getStringValue(), EmptyEvent.class, onChannelLeaveEvent());
-        server.addEventListener(Route.DISCONNECT.getStringValue(), EmptyEvent.class, onDisconnectEvent());
-        server.addEventListener(Route.LIST.getStringValue(), EmptyEvent.class, onGetChannelsListEvent());
-        server.addEventListener(Route.USER.getStringValue(), UserChannelEvent.class, onGetUserListEvent());
-        server.addEventListener(Route.chat.getStringValue(), ChatEvent.class, onChatReceived());
+        server.addEventListener(NameSpace.LOGIN.getStringValue(), LoginEvent.class, onLoginEvent());
+        server.addEventListener(NameSpace.JOIN.getStringValue(), JoinEvent.class, onChannelJoinEven());
+        server.addEventListener(NameSpace.LEAVE.getStringValue(), EmptyEvent.class, onChannelLeaveEvent());
+        server.addEventListener(NameSpace.DISCONNECT.getStringValue(), EmptyEvent.class, onDisconnectEvent());
+        server.addEventListener(NameSpace.LIST.getStringValue(), EmptyEvent.class, onGetChannelsListEvent());
+        server.addEventListener(NameSpace.USER.getStringValue(), UserChannelEvent.class, onGetUserListEvent());
+        server.addEventListener(NameSpace.CHAT.getStringValue(), ChatEvent.class, onChatReceived());
     }
 
 

@@ -20,12 +20,8 @@ public class ChannelService {
 
     private final ChannelRepository channelRepository;
 
-    private final MessageService messageService;
-
-    public ChannelService(final ChannelRepository channelRepository,
-                          final MessageService messageService) {
+    public ChannelService(final ChannelRepository channelRepository) {
         this.channelRepository = channelRepository;
-        this.messageService = messageService;
     }
 
 
