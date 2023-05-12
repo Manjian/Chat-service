@@ -64,10 +64,14 @@ public class ChatHandler implements EventReceived {
             if (hasAccount.isEmpty()) {
                 return;
             }
-            final Channel channel = hasAccount.get().getChannel();
-            if (channel != null) {
-                client.joinRoom(channel.getName());
+            if (hasAccount.get().getChannel() != null) {
+                final Channel channel = channelService.getChannelById(hasAccount.get().getChannel().getId());
+                if (channel != null) {
+                    log.info("user joined to his latest channel");
+                    client.joinRoom(channel.getName());
+                }
             }
+
             log.info("new user has been connect");
             client.sendEvent(READ_MESSAGE, "Welcome " + data.name());
         };
