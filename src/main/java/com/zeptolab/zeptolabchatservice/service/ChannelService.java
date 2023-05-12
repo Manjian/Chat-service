@@ -22,12 +22,9 @@ public class ChannelService {
 
     private final ChannelRepository channelRepository;
 
-    private final UserService userService;
 
-    public ChannelService(final ChannelRepository channelRepository,
-                          final UserService userService) {
+    public ChannelService(final ChannelRepository channelRepository) {
         this.channelRepository = channelRepository;
-        this.userService = userService;
     }
 
 
@@ -59,9 +56,7 @@ public class ChannelService {
     }
 
     private void validateUserChannel(final User user, final JoinEvent data, final OnChannelEvent onChannelEvent) {
-        final Optional<User> currentUser = userService.getByName(user.getName());
-        if (currentUser.isPresent()) {
-            final Channel currentChannel = currentUser.get().getChannel();
+            final Channel currentChannel = user.getChannel();
             if (currentChannel != null) {
                 final UUID currentChannelId = currentChannel.getId();
                 final String currentChannelName = this.getChannelById(currentChannelId).get().getName();
@@ -70,7 +65,7 @@ public class ChannelService {
                 }
             }
 
-        }
+
     }
 
     public Optional<Channel> getChannelIdByName(final String name) {
