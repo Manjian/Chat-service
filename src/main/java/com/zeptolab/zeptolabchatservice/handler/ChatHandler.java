@@ -55,7 +55,7 @@ public class ChatHandler implements EventReceived {
         server.addConnectListener(onConnected());
         server.addDisconnectListener(onDisconnected());
         server.addEventListener(NameSpace.LOGIN.getStringValue(), LoginEvent.class, onLoginEvent());
-        server.addEventListener(NameSpace.JOIN.getStringValue(), JoinEvent.class, onChannelJoinEven());
+        server.addEventListener(NameSpace.JOIN.getStringValue(), JoinEvent.class, onChannelJoinEvent());
         server.addEventListener(NameSpace.LEAVE.getStringValue(), EmptyEvent.class, onChannelLeaveEvent());
         server.addEventListener(NameSpace.DISCONNECT.getStringValue(), EmptyEvent.class, onDisconnectEvent());
         server.addEventListener(NameSpace.LIST.getStringValue(), EmptyEvent.class, onGetChannelsListEvent());
@@ -86,11 +86,12 @@ public class ChatHandler implements EventReceived {
     }
 
     @Override
-    public DataListener<JoinEvent> onChannelJoinEven() {
+    public DataListener<JoinEvent> onChannelJoinEvent() {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
-                final Channel channel = channelService.joinOrCreate(user.get(), data, client::leaveRoom);
+                channelService.validateUserChannel(user.get(), data, client::leaveRoom);
+                final Channel channel = channelService.joinOrCreate(user.get(), data);
                 final List<ChatEvent> list = messageService.getMessagesByChannelId(channel.getId());
                 client.joinRoom(channel.getName());
                 client.sendEvent(READ_MESSAGE, list.toString());

@@ -7,7 +7,7 @@ public interface EventReceived  {
 
     DataListener<LoginEvent> onLoginEvent();
 
-    DataListener<JoinEvent> onChannelJoinEven();
+    DataListener<JoinEvent> onChannelJoinEvent();
 
     DataListener<EmptyEvent> onChannelLeaveEvent();
 

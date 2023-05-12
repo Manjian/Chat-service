@@ -1,6 +1,7 @@
 package com.zeptolab.zeptolabchatservice.handler;
 
-public interface OnChannelEvent {
+@FunctionalInterface
+public interface OnLeaveCallback {
 
     void onChannelLeave(String channelName);
 }

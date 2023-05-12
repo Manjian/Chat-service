@@ -1,7 +1,7 @@
 package com.zeptolab.zeptolabchatservice.service;
 
 import com.zeptolab.zeptolabchatservice.data.JoinEvent;
-import com.zeptolab.zeptolabchatservice.handler.OnChannelEvent;
+import com.zeptolab.zeptolabchatservice.handler.OnLeaveCallback;
 import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
@@ -30,13 +30,8 @@ public class ChannelService {
 
     @Transactional
     public synchronized Channel joinOrCreate(final User user,
-                                             @NotNull final JoinEvent data,
-                                             final OnChannelEvent onChannelEvent) throws IllegalAccessException {
-
-        validateUserChannel(user, data, onChannelEvent);
-
-        final Optional<Channel> channelOptional = getChannelIdByName(data.channel());
-
+                                             @NotNull final JoinEvent data) throws IllegalAccessException {
+        final Optional<Channel> channelOptional = getChannelByName(data.channel());
         if (channelOptional.isPresent()) {
             if (channelOptional.get().getUsers().contains(user)) {
                 throw new IllegalArgumentException("User already joined to this channel");
@@ -52,29 +47,29 @@ public class ChannelService {
             return updateChannel(channel);
         }
 
-
     }
 
-    private void validateUserChannel(final User user, final JoinEvent data, final OnChannelEvent onChannelEvent) {
-            final Channel currentChannel = user.getChannel();
-            if (currentChannel != null) {
-                final UUID currentChannelId = currentChannel.getId();
-                final String currentChannelName = this.getChannelById(currentChannelId).get().getName();
-                if (!Objects.equals(currentChannelName, data.channel())) {
-                    onChannelEvent.onChannelLeave(currentChannelName);
-                }
+    public void validateUserChannel(final User user, final JoinEvent data, final OnLeaveCallback onLeaveCallback) {
+        final Channel currentChannel = user.getChannel();
+        if (currentChannel != null) {
+            final UUID currentChannelId = currentChannel.getId();
+            final Optional<Channel> channelOptional = this.getChannelById(currentChannelId);
+            if (channelOptional.isPresent() && (!Objects.equals(channelOptional.get().getName(), data.channel()))) {
+                onLeaveCallback.onChannelLeave(channelOptional.get().getName());
+                log.info("user left his current Channel");
             }
 
+        }
 
     }
 
-    public Optional<Channel> getChannelIdByName(final String name) {
+    public Optional<Channel> getChannelByName(final String name) {
         return channelRepository.getChannelByName(name);
     }
 
     @Transactional
     public List<String> getChannelUsers(final String channelName) {
-        final Optional<Channel> channel = this.getChannelIdByName(channelName);
+        final Optional<Channel> channel = this.getChannelByName(channelName);
         return channel.map(value -> value.getUsers()
                         .stream()
                         .map(User::getName)

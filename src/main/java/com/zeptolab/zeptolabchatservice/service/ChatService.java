@@ -33,7 +33,7 @@ public class ChatService {
     @Transactional
     public synchronized void saveMessage(final SocketIOClient senderClient, final ChatEvent chatEvent) {
 
-        final Optional<Channel> channel = channelService.getChannelIdByName(chatEvent.channel());
+        final Optional<Channel> channel = channelService.getChannelByName(chatEvent.channel());
         if (channel.isEmpty()) {
             log.error(" no channel name with {} ", chatEvent.channel());
             return;
