@@ -25,7 +25,7 @@ public class MessageService {
 
     @Transactional
     public List<ChatEvent> getMessagesByChannelId(final UUID channelId) {
-        final List<Message> list = this.messageRepository.getMessagesByChannelId(channelId).orElseGet(Collections::emptyList);
+        final List<Message> list = this.messageRepository.getMessagesByChannelId(channelId);
         return list.stream().map(message -> new ChatEvent(message.getMessageType(),
                 message.getContent(),
                 message.getChannel().getName(),
