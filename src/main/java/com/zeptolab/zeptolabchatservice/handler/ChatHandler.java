@@ -98,6 +98,7 @@ public class ChatHandler implements EventReceived {
                     client.sendEvent(READ_MESSAGE, list.toString());
                     log.info("user join to new channel");
                 } catch (IllegalAccessException e){
+                    log.warn("user is already in this channel");
                     client.sendEvent(READ_MESSAGE,"User is already in the channel");
                 }
             }

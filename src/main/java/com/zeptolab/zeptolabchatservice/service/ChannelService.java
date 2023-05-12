@@ -33,7 +33,7 @@ public class ChannelService {
         if (channelOptional.isPresent()) {
             final Channel channel = channelOptional.get();
             if (channel.getUsers().contains(user)) {
-                throw new IllegalArgumentException("User already joined to this channel");
+                throw new IllegalAccessException("User already joined to this channel");
             } else if (channel.getUsers().size() < 10) {
                 channel.addUser(user);
                 return channelRepository.save(channel);
