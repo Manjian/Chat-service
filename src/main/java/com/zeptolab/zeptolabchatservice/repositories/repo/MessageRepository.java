@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface MessageRepository extends JpaRepository<Message, Long> {
+public interface MessageRepository extends JpaRepository<Message, UUID> {
 
     Optional<List<Message>> getMessagesByChannelId(final UUID channelId);
 

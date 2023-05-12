@@ -50,7 +50,8 @@ public class ChannelService {
 
 
     }
-    public Optional<Channel> getChannelIdByName(final String name){
+
+    public Optional<Channel> getChannelIdByName(final String name) {
         return channelRepository.getChannelByName(name);
     }
 
@@ -67,8 +68,8 @@ public class ChannelService {
         return this.channelRepository.findAll().stream().map(Channel::getName).toList();
     }
 
-    public Channel getChannelById(UUID id) {
-        return this.channelRepository.getChannelById(id);
+    public Optional<Channel> getChannelById(UUID id) {
+        return this.channelRepository.findById(id);
     }
 
     public void insertMessage(final Channel channel) {

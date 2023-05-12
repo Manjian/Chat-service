@@ -9,11 +9,10 @@ import java.util.UUID;
 
 
 @Repository
-public interface ChannelRepository extends JpaRepository<Channel, Long> {
+public interface ChannelRepository extends JpaRepository<Channel, UUID> {
 
 
     Optional<Channel> getChannelByName(final String name);
 
-    Channel getChannelById(final UUID channelId);
 
 }

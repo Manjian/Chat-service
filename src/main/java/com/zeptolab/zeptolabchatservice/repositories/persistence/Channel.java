@@ -23,7 +23,8 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "t_channel",
-        uniqueConstraints = {@UniqueConstraint(name = "uk_channels_id_deleted", columnNames = {"id", "deleted"})}
+        uniqueConstraints = {@UniqueConstraint(name = "uk_channels_id_deleted", columnNames = {"id", "deleted"}),
+                @UniqueConstraint(name = "uk_channel_name", columnNames = {"name"})}
 )
 public class Channel extends BaseEntity {
 

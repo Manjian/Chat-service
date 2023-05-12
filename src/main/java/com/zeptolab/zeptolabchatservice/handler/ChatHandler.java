@@ -67,10 +67,10 @@ public class ChatHandler implements EventReceived {
                 return;
             }
             if (hasAccount.get().getChannel() != null) {
-                final Channel channel = channelService.getChannelById(hasAccount.get().getChannel().getId());
-                if (channel != null) {
+                final Optional<Channel> channel = channelService.getChannelById(hasAccount.get().getChannel().getId());
+                if (channel.isPresent()) {
                     log.info("user joined to his latest channel");
-                    client.joinRoom(channel.getName());
+                    client.joinRoom(channel.get().getName());
                 }
             }
 
@@ -100,13 +100,13 @@ public class ChatHandler implements EventReceived {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
                 userService.validateChannelAccess(user.get());
-                final Channel channel = channelService.getChannelById(user.get().getChannel().getId());
-                if (channel != null) {
-                    final String channelName = channel.getName();
+                final Optional<Channel> channel = channelService.getChannelById(user.get().getChannel().getId());
+                if (channel.isPresent()) {
+                    final String channelName = channel.get().getName();
                     final Optional<User> updatedUser = this.userService.terminateUserAccessToChannel(user.get());
                     if (updatedUser.isPresent()) {
                         client.leaveRoom(channelName);
-                        client.sendEvent(READ_MESSAGE, "leaved from " + channel.getName());
+                        client.sendEvent(READ_MESSAGE, "leaved from " + channelName);
                     }
                 }
             }

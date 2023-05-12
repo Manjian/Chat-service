@@ -8,7 +8,8 @@ create table t_channel
     deleted                   timestamp   null,
 
 
-    constraint uk_channels_id_deleted unique (id, deleted)
+    constraint uk_channels_id_deleted unique (id, deleted),
+    constraint uk_channel_name unique (name)
 
 );
 
