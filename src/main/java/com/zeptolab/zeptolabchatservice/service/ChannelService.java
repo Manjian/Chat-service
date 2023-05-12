@@ -5,12 +5,16 @@ import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
+@Slf4j
 public class ChannelService {
 
     private final ChannelRepository channelRepository;
@@ -24,18 +28,22 @@ public class ChannelService {
     }
 
 
-    public Channel joinOrCreate(final User user, @NotNull final JoinEvent data) throws IllegalAccessException {
+    @Transactional
+    public synchronized Channel joinOrCreate(final User user, @NotNull final JoinEvent data) throws IllegalAccessException {
+
         final Optional<Channel> channelOptional = channelRepository.getChannelByName(data.channel());
+
         if (channelOptional.isPresent()) {
-            if (channelOptional.get().getUsers().size() < 10) {
+            if (channelOptional.get().getUsers().contains(user)) {
+                throw new IllegalArgumentException("User already joined to this channel");
+            } else if (channelOptional.get().getUsers().size() < 10) {
                 channelOptional.get().addUser(user);
                 return channelRepository.save(channelOptional.get());
             } else {
-                throw new IllegalAccessException("user can't join to the target channelOptional");
+                throw new IllegalAccessException("user can't join to the target channel");
             }
         } else {
-
-            Channel channel = createChannel(data);
+            final Channel channel = createChannel(data);
             channel.addUser(user);
             return updateChannel(channel);
         }
@@ -56,4 +64,7 @@ public class ChannelService {
         return this.channelRepository.findAll().stream().map(Channel::getName).toList();
     }
 
+    public Channel getChannelById(UUID id) {
+        return this.channelRepository.getChannelById(id);
+    }
 }

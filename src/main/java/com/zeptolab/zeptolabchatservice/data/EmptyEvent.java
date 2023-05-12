@@ -1,3 +1,3 @@
 package com.zeptolab.zeptolabchatservice.data;
 
-public interface EmptyEvent {}
+public record EmptyEvent() {}

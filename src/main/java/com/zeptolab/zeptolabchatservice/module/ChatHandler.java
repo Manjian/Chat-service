@@ -57,7 +57,7 @@ public class ChatHandler implements EventReceived {
 
 
     @Override
-    public synchronized DataListener<LoginEvent> onLoginEvent() {
+    public DataListener<LoginEvent> onLoginEvent() {
         return (client, data, ackSender) -> {
             final Device device = new Device(client.getRemoteAddress().toString());
             final Optional<User> hasAccount = userService.insertOrUpdate(data, device, client.getSessionId().toString());
@@ -69,13 +69,12 @@ public class ChatHandler implements EventReceived {
                 client.joinRoom(channel.getName());
             }
             log.info("new user has been connect");
-
             client.sendEvent(READ_MESSAGE, "Welcome " + data.name());
         };
     }
 
     @Override
-    public synchronized DataListener<JoinEvent> onChannelJoinEven() {
+    public DataListener<JoinEvent> onChannelJoinEven() {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
@@ -83,17 +82,19 @@ public class ChatHandler implements EventReceived {
                 final List<Message> list = channel.getMessages();
                 client.joinRoom(channel.getName());
                 client.sendEvent(READ_MESSAGE, list.toString());
+                log.info("user join to new channel");
             }
 
         };
     }
 
     @Override
-    public synchronized DataListener<EmptyEvent> onChannelLeaveEvent() {
+    public DataListener<EmptyEvent> onChannelLeaveEvent() {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
-                final Channel channel = user.get().getChannel();
+                userService.validateChannelAccess(user.get());
+                final Channel channel = channelService.getChannelById(user.get().getChannel().getId());
                 if (channel != null) {
                     final String channelName = channel.getName();
                     final Optional<User> updatedUser = this.userService.terminateUserAccessToChannel(user.get());
@@ -101,15 +102,13 @@ public class ChatHandler implements EventReceived {
                         client.leaveRoom(channelName);
                         client.sendEvent(READ_MESSAGE, "leaved from " + channel.getName());
                     }
-
                 }
-
             }
         };
     }
 
     @Override
-    public synchronized DataListener<EmptyEvent> onDisconnectEvent() {
+    public DataListener<EmptyEvent> onDisconnectEvent() {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
@@ -119,7 +118,7 @@ public class ChatHandler implements EventReceived {
     }
 
     @Override
-    public synchronized DataListener<EmptyEvent> onGetChannelsListEvent() {
+    public DataListener<EmptyEvent> onGetChannelsListEvent() {
         return (client, data, ackSender) -> {
             final List<String> channels = channelService.getAllChannel();
             client.sendEvent(READ_MESSAGE, channels);
@@ -127,21 +126,21 @@ public class ChatHandler implements EventReceived {
     }
 
     @Override
-    public synchronized DataListener<UserChannelEvent> onGetUserListEvent() {
+    public DataListener<UserChannelEvent> onGetUserListEvent() {
         return (client, data, ackSender) -> {
             final List<String> list = userService.getUsersByChannel(data.channel());
             client.sendEvent(READ_MESSAGE, list);
         };
     }
 
-    private synchronized ConnectListener onConnected() {
+    private ConnectListener onConnected() {
         return client -> {
             final Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
         };
 
     }
 
-    private synchronized DisconnectListener onDisconnected() {
+    private DisconnectListener onDisconnected() {
         return client -> {
             Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
         };
