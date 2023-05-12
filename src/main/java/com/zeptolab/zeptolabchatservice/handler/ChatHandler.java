@@ -14,6 +14,7 @@ import com.zeptolab.zeptolabchatservice.repositories.persistence.Device;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import com.zeptolab.zeptolabchatservice.service.ChannelService;
+import com.zeptolab.zeptolabchatservice.service.MessageService;
 import com.zeptolab.zeptolabchatservice.service.UserService;
 import com.zeptolab.zeptolabchatservice.service.ChatService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,8 @@ public class ChatHandler implements EventReceived {
 
     private final UserService userService;
 
+    private final MessageService messageService;
+
     private final ChannelService channelService;
 
     private static final String READ_MESSAGE = "read_message";
@@ -38,9 +41,11 @@ public class ChatHandler implements EventReceived {
     public ChatHandler(final SocketIOServer server,
                        final ChatService chatService,
                        final UserService userService,
+                       final MessageService messageService,
                        final ChannelService channelService) {
         this.chatService = chatService;
         this.userService = userService;
+        this.messageService = messageService;
         this.channelService = channelService;
         addListeners(server);
     }
@@ -85,9 +90,11 @@ public class ChatHandler implements EventReceived {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
                 final Channel channel = channelService.joinOrCreate(user.get(), data);
-                final List<Message> list = channel.getMessages();
+                final List<Message> list = messageService.getMessagesByChannelId(channel.getId());
                 client.joinRoom(channel.getName());
-                client.sendEvent(READ_MESSAGE, list.toString());
+                if (!list.isEmpty()){
+                    client.sendEvent(READ_MESSAGE, list.toString());
+                }
                 log.info("user join to new channel");
             }
 

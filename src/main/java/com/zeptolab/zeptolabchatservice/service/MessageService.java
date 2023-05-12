@@ -21,12 +21,6 @@ public class MessageService {
 
     }
 
-
-    public Message saveMessage(final Message messageData) {
-        return messageRepository.save(messageData);
-    }
-
-
     public List<Message> getMessagesByChannelId(final UUID channelId) {
         return this.messageRepository.getMessagesByChannelId(channelId).orElse(Collections.emptyList());
     }
