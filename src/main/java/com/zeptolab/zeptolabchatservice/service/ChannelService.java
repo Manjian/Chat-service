@@ -28,7 +28,7 @@ public class ChannelService {
 
     @Transactional
     public synchronized Channel joinOrCreate(final User user,
-                                             @NotNull final JoinEvent data) throws IllegalAccessException {
+                                             final JoinEvent data) throws IllegalAccessException {
         final Optional<Channel> channelOptional = getChannelByName(data.channel());
         if (channelOptional.isPresent()) {
             final Channel channel = channelOptional.get();
@@ -86,7 +86,7 @@ public class ChannelService {
         return this.channelRepository.findAll().stream().map(Channel::getName).toList();
     }
 
-    public Optional<Channel> getChannelById(UUID id) {
+    public Optional<Channel> getChannelById(final UUID id) {
         return this.channelRepository.findById(id);
     }
 

@@ -10,7 +10,6 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 
-
     Optional<User> getUserByName(String name);
     Optional<User> getUserBySessionId(String sessionId);
 

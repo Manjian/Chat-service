@@ -29,7 +29,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> getUserBySessionId(String sessionId) {
+    public Optional<User> getUserBySessionId(final String sessionId) {
         return this.userRepository.getUserBySessionId(sessionId);
     }
 
@@ -42,8 +42,8 @@ public class UserService {
 
     @Transactional
     public synchronized Optional<User> insertOrUpdate(final LoginEvent loginEvent,
-                                         final Device device,
-                                         final String sessionId) {
+                                                      final Device device,
+                                                      final String sessionId) {
         final Optional<User> userOptional = this.getByName(loginEvent.name());
 
         final User user;

@@ -35,8 +35,6 @@ public class Device extends BaseEntity {
     @Column(name = "address", nullable = false)
     private String address;
 
-
-
     public Device(final String address) {
         this.address = address;
 
