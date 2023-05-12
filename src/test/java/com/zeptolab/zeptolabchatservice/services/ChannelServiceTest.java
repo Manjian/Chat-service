@@ -1,17 +1,14 @@
 package com.zeptolab.zeptolabchatservice.services;
 
 import com.zeptolab.zeptolabchatservice.data.JoinEvent;
-import com.zeptolab.zeptolabchatservice.handler.ChatHandler;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
 import com.zeptolab.zeptolabchatservice.service.ChannelService;
-import com.zeptolab.zeptolabchatservice.service.ChatService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
