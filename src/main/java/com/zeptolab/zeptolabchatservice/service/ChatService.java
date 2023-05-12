@@ -16,6 +16,8 @@ public class ChatService {
 
     private final ChannelService channelService;
 
+    private static final String READ_MESSAGE = "read_message";
+
     public ChatService(final ChannelService channelService) {
         this.channelService = channelService;
     }
@@ -24,7 +26,7 @@ public class ChatService {
     public void sendSocketMessage(final SocketIOClient senderClient,final ChatEvent chatEvent ) {
         for (SocketIOClient client : senderClient.getNamespace().getRoomOperations(chatEvent.channel()).getClients()) {
             if (!client.getSessionId().equals(senderClient.getSessionId())) {
-                client.sendEvent("read_message", chatEvent.text());
+                client.sendEvent(READ_MESSAGE, chatEvent.text());
             }
         }
     }

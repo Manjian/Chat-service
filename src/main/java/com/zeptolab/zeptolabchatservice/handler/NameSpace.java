@@ -9,7 +9,7 @@ public enum NameSpace {
     DISCONNECT("/disconnect"),
     LIST("/list"),
     USER("/users"),
-    CHAT("/read_message");
+    CHAT("/send_message");
 
 
     private final String stringValue;

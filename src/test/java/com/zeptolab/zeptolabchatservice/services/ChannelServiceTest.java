@@ -31,9 +31,6 @@ public class ChannelServiceTest {
     @MockBean
     private ChannelRepository repository;
 
-    @MockBean
-    private ChatHandler handler;
-
     @Test
     void joinOrCreateTest() throws IllegalAccessException {
         //preparation
@@ -69,7 +66,7 @@ public class ChannelServiceTest {
     }
 
     @Test
-    void joinOrCreateContainsUser() throws IllegalAccessException {
+    void joinOrCreateContainsUser() {
         //preparation
         final Channel channel = getChannel();
         final User currentUser = new User("current", "pass", "sessionId");
