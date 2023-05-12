@@ -137,6 +137,7 @@ public class ChatHandler implements EventReceived {
             if (user.isPresent()) {
                 client.disconnect();
             }
+
         };
     }
 

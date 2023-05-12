@@ -1,7 +1,6 @@
 package com.zeptolab.zeptolabchatservice.service;
 
 import com.zeptolab.zeptolabchatservice.data.JoinEvent;
-import com.zeptolab.zeptolabchatservice.handler.OnLeaveCallback;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
@@ -14,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Service
 @Slf4j
@@ -49,13 +49,13 @@ public class ChannelService {
 
     public void validateUserChannel(final User user,
                                     final JoinEvent data,
-                                    final OnLeaveCallback onLeaveCallback) {
+                                    final Consumer<String> consumer) {
         final Channel currentChannel = user.getChannel();
         if (currentChannel != null) {
             final UUID currentChannelId = currentChannel.getId();
             final Optional<Channel> channelOptional = this.getChannelById(currentChannelId);
             if (channelOptional.isPresent() && !channelOptional.get().getName().equals(data.channel())) {
-                onLeaveCallback.onChannelLeave(channelOptional.get().getName());
+                consumer.accept(channelOptional.get().getName());
                 log.info("user left his current Channel");
             }
         }
