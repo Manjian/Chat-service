@@ -153,7 +153,7 @@ public class ChannelServiceTest {
 
     private Channel getChannel() {
         final Channel channel = new Channel("channelName");
-        final User user = new User("nama", "password", "sessionId");
+        final User user = new User("name", "password", "sessionId");
         channel.addUser(user);
         user.setChannel(channel);
         return channel;
