@@ -34,43 +34,44 @@ Downland [Postman](https://www.postman.com/) or any Network client software who 
 ## How to use
 <br /> The client needs to add an event listener for  ***read_message***  in order to receive all events sent from the server.
 
-- /login 
+- **/login** This namespace will accept any new login.
+
 ```json
 {
   "name": "John",
   "password": "imBadPassword"
 }
 ```
-- /join
+- **/join** This namespace will run in order to join a new channel.
 ```json
 {
   "channel": "MyChannel"
 }
 ```
-- /leave
+- **/leave** This namespace will automatically detect if a user is in a channel and will make him leave it.
 
 ```json 
-// Just a empty json
+ /* Just a empty json */
 {}  
 ```
-- /disconnect
+- **/disconnect** This namespace will close the connection between the server and the client.
 ```json 
-// Just a empty json
+ /* Just a empty json */ 
 {}  
 ```
-- /list
+- **/list** This namespace will return a list of all channels.
 ```json 
-// Just a empty json
+ /* Just a empty json */
 {}
 ```
-- /users
+- **/users** This namespace will return a list of users in the target channel.
 ```json
 {
   "channel": "targetChannel"
 }
 ```
 
-- /send_message
+- **/send_message** This namespace will accept a new chat message from the client.
 ```json
 {
    "messageType" :"CLIENT",
