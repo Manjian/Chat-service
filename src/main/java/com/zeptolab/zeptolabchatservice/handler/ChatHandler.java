@@ -1,4 +1,4 @@
-package com.zeptolab.zeptolabchatservice.module;
+package com.zeptolab.zeptolabchatservice.handler;
 
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;

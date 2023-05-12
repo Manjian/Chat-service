@@ -1,4 +1,4 @@
-package com.zeptolab.zeptolabchatservice.module;
+package com.zeptolab.zeptolabchatservice.handler;
 
 public enum Route {
 
