@@ -31,7 +31,7 @@ public class ChannelService {
     @Transactional
     public synchronized Channel joinOrCreate(final User user, @NotNull final JoinEvent data) throws IllegalAccessException {
 
-        final Optional<Channel> channelOptional = channelRepository.getChannelByName(data.channel());
+        final Optional<Channel> channelOptional = getChannelIdByName(data.channel());
 
         if (channelOptional.isPresent()) {
             if (channelOptional.get().getUsers().contains(user)) {
@@ -50,6 +50,9 @@ public class ChannelService {
 
 
     }
+    public Optional<Channel> getChannelIdByName(final String name){
+        return channelRepository.getChannelByName(name);
+    }
 
     private Channel updateChannel(final Channel channel) {
         return channelRepository.save(channel);
@@ -66,5 +69,9 @@ public class ChannelService {
 
     public Channel getChannelById(UUID id) {
         return this.channelRepository.getChannelById(id);
+    }
+
+    public void insertMessage(final Channel channel) {
+        this.channelRepository.save(channel);
     }
 }

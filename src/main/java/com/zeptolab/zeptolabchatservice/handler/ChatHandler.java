@@ -4,6 +4,7 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.zeptolab.zeptolabchatservice.data.ChatEvent;
 import com.zeptolab.zeptolabchatservice.data.JoinEvent;
 import com.zeptolab.zeptolabchatservice.data.EmptyEvent;
 import com.zeptolab.zeptolabchatservice.data.LoginEvent;
@@ -14,7 +15,7 @@ import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import com.zeptolab.zeptolabchatservice.service.ChannelService;
 import com.zeptolab.zeptolabchatservice.service.UserService;
-import com.zeptolab.zeptolabchatservice.service.SocketService;
+import com.zeptolab.zeptolabchatservice.service.ChatService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ import java.util.*;
 public class ChatHandler implements EventReceived {
 
 
-    private final SocketService socketService;
+    private final ChatService chatService;
 
     private final UserService userService;
 
@@ -35,10 +36,10 @@ public class ChatHandler implements EventReceived {
 
 
     public ChatHandler(final SocketIOServer server,
-                       final SocketService socketService,
+                       final ChatService chatService,
                        final UserService userService,
                        final ChannelService channelService) {
-        this.socketService = socketService;
+        this.chatService = chatService;
         this.userService = userService;
         this.channelService = channelService;
         addListeners(server);
@@ -53,6 +54,7 @@ public class ChatHandler implements EventReceived {
         server.addEventListener(Route.DISCONNECT.getStringValue(), EmptyEvent.class, onDisconnectEvent());
         server.addEventListener(Route.LIST.getStringValue(), EmptyEvent.class, onGetChannelsListEvent());
         server.addEventListener(Route.USER.getStringValue(), UserChannelEvent.class, onGetUserListEvent());
+        server.addEventListener(Route.USER.getStringValue(), ChatEvent.class, onChatReceived());
     }
 
 
@@ -137,9 +139,18 @@ public class ChatHandler implements EventReceived {
         };
     }
 
+    @Override
+    public DataListener<ChatEvent> onChatReceived() {
+        return (client, data, ackSender) -> {
+            log.info("new chat event received");
+            chatService.saveMessage(client,data);
+        };
+    }
+
     private ConnectListener onConnected() {
         return client -> {
             final Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
+            log.info("onConnected {} " , params.toString());
         };
 
     }
@@ -147,6 +158,7 @@ public class ChatHandler implements EventReceived {
     private DisconnectListener onDisconnected() {
         return client -> {
             Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
+            log.info("onDisconnected {} " , params.toString());
         };
     }
 

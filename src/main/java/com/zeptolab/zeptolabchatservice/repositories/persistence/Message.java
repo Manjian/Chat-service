@@ -11,8 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,8 +22,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 @Getter
 @Setter
 @Entity
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "t_message",
         uniqueConstraints = {@UniqueConstraint(name = "uk_messages_id_deleted", columnNames = {"id", "deleted"})}
@@ -41,14 +37,21 @@ public class Message extends BaseEntity {
             nullable = false)
     private Channel channel;
 
+    public Message(final MessageType messageType, final String content, final String messageOwner) {
+        this.messageType = messageType;
+        this.content = content;
+        this.messageOwner = messageOwner;
+    }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "messageType", nullable = false)
+    @Column(name = "message_type", nullable = false)
     private MessageType messageType;
 
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "message_owner", nullable = false)
+    private String messageOwner;
 
     @Override
     public boolean equals(Object o) {
@@ -67,6 +70,7 @@ public class Message extends BaseEntity {
                 .append(this.channel, message.channel)
                 .append(this.content, message.content)
                 .append(this.messageType, message.messageType)
+                .append(this.messageOwner, message.messageOwner)
                 .isEquals();
     }
 
@@ -77,6 +81,7 @@ public class Message extends BaseEntity {
                 .append(this.channel)
                 .append(this.content)
                 .append(this.messageType)
+                .append(this.messageOwner)
                 .toHashCode();
     }
 
@@ -87,6 +92,7 @@ public class Message extends BaseEntity {
                 .append("channel", this.channel)
                 .append("content", this.content)
                 .append("messageType", this.messageType)
+                .append("messageOwner", this.messageOwner)
                 .toString();
     }
 

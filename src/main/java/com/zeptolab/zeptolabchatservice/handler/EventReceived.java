@@ -17,5 +17,7 @@ public interface EventReceived  {
 
     DataListener<UserChannelEvent> onGetUserListEvent();
 
+    DataListener<ChatEvent> onChatReceived();
+
 
 }
