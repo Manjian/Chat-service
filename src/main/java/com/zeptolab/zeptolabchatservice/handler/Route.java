@@ -8,7 +8,7 @@ public enum Route {
     LEAVE("/leave"),
     DISCONNECT("/disconnect"),
     LIST("/list"),
-    USER("/users");
+    USER("/read_message");
 
 
     private final String stringValue;

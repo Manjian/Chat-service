@@ -35,9 +35,6 @@ public class UserService {
         return this.userRepository.getUserBySessionId(sessionId);
     }
 
-    public List<String> getUsersByChannel(final String channel) {
-        return this.userRepository.getUsersByChannel_Name(channel).stream().map(User::getName).toList();
-    }
 
     @Transactional
     public synchronized Optional<User> terminateUserAccessToChannel(final User user) {

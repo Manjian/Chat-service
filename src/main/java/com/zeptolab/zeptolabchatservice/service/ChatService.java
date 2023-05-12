@@ -24,7 +24,7 @@ public class ChatService {
     }
 
 
-    public void sendSocketMessage(SocketIOClient senderClient, ChatEvent chatEvent ) {
+    public void sendSocketMessage(final SocketIOClient senderClient,final ChatEvent chatEvent ) {
         for (SocketIOClient client : senderClient.getNamespace().getRoomOperations(chatEvent.channel()).getClients()) {
             if (!client.getSessionId().equals(senderClient.getSessionId())) {
                 client.sendEvent("read_message", chatEvent.text());
@@ -34,16 +34,16 @@ public class ChatService {
 
     public synchronized void saveMessage(final SocketIOClient senderClient, final ChatEvent chatEvent) {
 
-        final Optional<Channel> channel = channelService.getChannelIdByName(chatEvent.name());
+        final Optional<Channel> channel = channelService.getChannelIdByName(chatEvent.channel());
 
         if (channel.isEmpty()) {
-            log.error(" no channel name with {} ", chatEvent.name());
+            log.error(" no channel name with {} ", chatEvent.channel());
             return;
         }
         final Message message = new Message(
                 chatEvent.messageType(),
                 chatEvent.text(),
-                chatEvent.name());
+                chatEvent.username());
 
         channel.get().addMessage(message);
         channelService.insertMessage(channel.get());

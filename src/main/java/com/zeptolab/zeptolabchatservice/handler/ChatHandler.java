@@ -134,8 +134,7 @@ public class ChatHandler implements EventReceived {
     @Override
     public DataListener<UserChannelEvent> onGetUserListEvent() {
         return (client, data, ackSender) -> {
-            final List<String> list = userService.getUsersByChannel(data.channel());
-            client.sendEvent(READ_MESSAGE, list);
+            client.sendEvent(READ_MESSAGE, channelService.getChannelUsers(data.channel()));
         };
     }
 

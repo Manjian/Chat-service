@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -53,6 +54,15 @@ public class ChannelService {
 
     public Optional<Channel> getChannelIdByName(final String name) {
         return channelRepository.getChannelByName(name);
+    }
+
+    public List<String> getChannelUsers(final String channelName){
+        final Optional<Channel> channel = this.getChannelIdByName(channelName);
+        return channel.map(value -> value.getUsers()
+                .stream()
+                .map(User::getName)
+                .toList())
+                .orElse(Collections.emptyList());
     }
 
     private Channel updateChannel(final Channel channel) {
