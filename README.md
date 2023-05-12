@@ -30,7 +30,7 @@ zeptolab.datasource.password=whereIsThePassword
 
 ## Connect to socket 
 Downland [Postman](https://www.postman.com/) or any Network client software who support socket connection
-
+Connect to [ws://localhost:8085](ws://localhost:8085) the project will run on 8085 port which is declared in **application.properties** file,The unit tests will use a separate port to enable the execution of the Services classes.
 ## How to use
 <br /> The client needs to add an event listener for  ***read_message***  in order to receive all events sent from the server.
 
