@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SocketIOConfig {
 
-    @Value("${socket-server.host}")
+    @Value("${zeptolab-socket-server.host}")
     private String host;
 
-    @Value("${socket-server.port}")
+    @Value("${zeptolab-socket-server.port}")
     private Integer port;
 
     @Bean

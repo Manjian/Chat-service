@@ -7,6 +7,7 @@ import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import com.zeptolab.zeptolabchatservice.repositories.repo.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -32,6 +33,8 @@ public class ChatService {
         }
     }
 
+
+    @Transactional
     public synchronized void saveMessage(final SocketIOClient senderClient, final ChatEvent chatEvent) {
 
         final Optional<Channel> channel = channelService.getChannelIdByName(chatEvent.channel());
