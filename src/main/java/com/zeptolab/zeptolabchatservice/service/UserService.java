@@ -71,7 +71,7 @@ public class UserService {
 
     }
 
-    public void validateChannelAccess(final User user) {
+    public void validateChannelAccess(final User user) throws IllegalStateException{
         if (user.getChannel() == null){
             throw new IllegalStateException("No Channel for leave");
         }

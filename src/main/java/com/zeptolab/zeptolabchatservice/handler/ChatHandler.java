@@ -110,16 +110,22 @@ public class ChatHandler implements EventReceived {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
-                userService.validateChannelAccess(user.get());
-                final Optional<Channel> channel = channelService.getChannelById(user.get().getChannel().getId());
-                if (channel.isPresent()) {
-                    final String channelName = channel.get().getName();
-                    final Optional<User> updatedUser = this.userService.terminateUserAccessToChannel(user.get());
-                    if (updatedUser.isPresent()) {
-                        client.leaveRoom(channelName);
-                        client.sendEvent(READ_MESSAGE, "leaved from " + channelName);
+                try {
+                    userService.validateChannelAccess(user.get());
+                    final Optional<Channel> channel = channelService.getChannelById(user.get().getChannel().getId());
+                    if (channel.isPresent()) {
+                        final String channelName = channel.get().getName();
+                        final Optional<User> updatedUser = this.userService.terminateUserAccessToChannel(user.get());
+                        if (updatedUser.isPresent()) {
+                            client.leaveRoom(channelName);
+                            client.sendEvent(READ_MESSAGE, "leaved from " + channelName);
+                        }
                     }
+                } catch (IllegalStateException e){
+                    log.warn("User don't have any channel access ");
+                    client.sendEvent(READ_MESSAGE, "No channel available for leave");
                 }
+
             }
         };
     }
