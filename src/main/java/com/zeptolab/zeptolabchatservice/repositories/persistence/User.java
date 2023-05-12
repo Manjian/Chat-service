@@ -1,6 +1,15 @@
 package com.zeptolab.zeptolabchatservice.repositories.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +26,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "t_users",
-        uniqueConstraints = {@UniqueConstraint(name = "uk_users_id_deleted", columnNames = {"id", "deleted"})}
+        uniqueConstraints = {@UniqueConstraint(name = "uk_users_name", columnNames = {"name"})}
 )
 public class User extends BaseEntity {
 
@@ -45,7 +54,7 @@ public class User extends BaseEntity {
     private List<Device> devices = new ArrayList<>();
 
 
-    public User(final String name, final String password, final String  sessionId) {
+    public User(final String name, final String password, final String sessionId) {
         this.name = name;
         this.password = password;
         this.sessionId = sessionId;

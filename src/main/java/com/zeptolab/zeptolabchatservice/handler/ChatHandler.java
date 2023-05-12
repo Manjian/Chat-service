@@ -54,7 +54,7 @@ public class ChatHandler implements EventReceived {
         server.addEventListener(Route.DISCONNECT.getStringValue(), EmptyEvent.class, onDisconnectEvent());
         server.addEventListener(Route.LIST.getStringValue(), EmptyEvent.class, onGetChannelsListEvent());
         server.addEventListener(Route.USER.getStringValue(), UserChannelEvent.class, onGetUserListEvent());
-        server.addEventListener(Route.USER.getStringValue(), ChatEvent.class, onChatReceived());
+        server.addEventListener(Route.chat.getStringValue(), ChatEvent.class, onChatReceived());
     }
 
 
@@ -134,7 +134,8 @@ public class ChatHandler implements EventReceived {
     @Override
     public DataListener<UserChannelEvent> onGetUserListEvent() {
         return (client, data, ackSender) -> {
-            client.sendEvent(READ_MESSAGE, channelService.getChannelUsers(data.channel()));
+            final List<String> list = channelService.getChannelUsers(data.channel());
+            client.sendEvent(READ_MESSAGE, list);
         };
     }
 
@@ -142,14 +143,14 @@ public class ChatHandler implements EventReceived {
     public DataListener<ChatEvent> onChatReceived() {
         return (client, data, ackSender) -> {
             log.info("new chat event received");
-            chatService.saveMessage(client,data);
+            chatService.saveMessage(client, data);
         };
     }
 
     private ConnectListener onConnected() {
         return client -> {
             final Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
-            log.info("onConnected {} " , params.toString());
+            log.info("onConnected {} ", params.toString());
         };
 
     }
@@ -157,7 +158,7 @@ public class ChatHandler implements EventReceived {
     private DisconnectListener onDisconnected() {
         return client -> {
             Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
-            log.info("onDisconnected {} " , params.toString());
+            log.info("onDisconnected {} ", params.toString());
         };
     }
 

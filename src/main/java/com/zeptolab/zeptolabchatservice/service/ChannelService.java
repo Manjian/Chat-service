@@ -56,13 +56,14 @@ public class ChannelService {
         return channelRepository.getChannelByName(name);
     }
 
+    @Transactional
     public List<String> getChannelUsers(final String channelName){
         final Optional<Channel> channel = this.getChannelIdByName(channelName);
         return channel.map(value -> value.getUsers()
                 .stream()
                 .map(User::getName)
                 .toList())
-                .orElse(Collections.emptyList());
+                .orElseGet(Collections::emptyList);
     }
 
     private Channel updateChannel(final Channel channel) {

@@ -8,7 +8,6 @@ create table t_channel
     deleted                   timestamp   null,
 
 
-    constraint uk_channels_id_deleted unique (id, deleted),
     constraint uk_channel_name unique (name)
 
 );
@@ -46,8 +45,8 @@ create table t_users
     deleted                   timestamp   null,
 
 
-    constraint uk_users_id_deleted unique (id, deleted),
-    constraint fk_users_channel_id foreign key (channel_id) references t_channel (id)
+    constraint fk_users_channel_id foreign key (channel_id) references t_channel (id),
+    constraint uk_users_name unique (name)
 
 );
 
