@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@TestPropertySource(locations = "application-test.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
 @ActiveProfiles("test")
 public class UserServiceTest {
 
