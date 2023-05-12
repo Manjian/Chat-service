@@ -23,7 +23,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    private Optional<User> getByName(final String name) {
+    public Optional<User> getByName(final String name) {
         return userRepository.getUserByName(name);
     }
 

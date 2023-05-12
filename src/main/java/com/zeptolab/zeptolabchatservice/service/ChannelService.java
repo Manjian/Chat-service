@@ -1,6 +1,7 @@
 package com.zeptolab.zeptolabchatservice.service;
 
 import com.zeptolab.zeptolabchatservice.data.JoinEvent;
+import com.zeptolab.zeptolabchatservice.handler.OnChannelEvent;
 import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,13 +22,21 @@ public class ChannelService {
 
     private final ChannelRepository channelRepository;
 
-    public ChannelService(final ChannelRepository channelRepository) {
+    private final UserService userService;
+
+    public ChannelService(final ChannelRepository channelRepository,
+                          final UserService userService) {
         this.channelRepository = channelRepository;
+        this.userService = userService;
     }
 
 
     @Transactional
-    public synchronized Channel joinOrCreate(final User user, @NotNull final JoinEvent data) throws IllegalAccessException {
+    public synchronized Channel joinOrCreate(final User user,
+                                             @NotNull final JoinEvent data,
+                                             final OnChannelEvent onChannelEvent) throws IllegalAccessException {
+
+        validateUserChannel(user, data, onChannelEvent);
 
         final Optional<Channel> channelOptional = getChannelIdByName(data.channel());
 
@@ -48,17 +58,32 @@ public class ChannelService {
 
     }
 
+    private void validateUserChannel(final User user, final JoinEvent data, final OnChannelEvent onChannelEvent) {
+        final Optional<User> currentUser = userService.getByName(user.getName());
+        if (currentUser.isPresent()) {
+            final Channel currentChannel = currentUser.get().getChannel();
+            if (currentChannel != null) {
+                final UUID currentChannelId = currentChannel.getId();
+                final String currentChannelName = this.getChannelById(currentChannelId).get().getName();
+                if (!Objects.equals(currentChannelName, data.channel())) {
+                    onChannelEvent.onChannelLeave(currentChannelName);
+                }
+            }
+
+        }
+    }
+
     public Optional<Channel> getChannelIdByName(final String name) {
         return channelRepository.getChannelByName(name);
     }
 
     @Transactional
-    public List<String> getChannelUsers(final String channelName){
+    public List<String> getChannelUsers(final String channelName) {
         final Optional<Channel> channel = this.getChannelIdByName(channelName);
         return channel.map(value -> value.getUsers()
-                .stream()
-                .map(User::getName)
-                .toList())
+                        .stream()
+                        .map(User::getName)
+                        .toList())
                 .orElseGet(Collections::emptyList);
     }
 

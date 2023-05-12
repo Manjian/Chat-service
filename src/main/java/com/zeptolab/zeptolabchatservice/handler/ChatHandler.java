@@ -5,22 +5,23 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.zeptolab.zeptolabchatservice.data.ChatEvent;
-import com.zeptolab.zeptolabchatservice.data.JoinEvent;
 import com.zeptolab.zeptolabchatservice.data.EmptyEvent;
+import com.zeptolab.zeptolabchatservice.data.JoinEvent;
 import com.zeptolab.zeptolabchatservice.data.LoginEvent;
 import com.zeptolab.zeptolabchatservice.data.UserChannelEvent;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Device;
-import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
 import com.zeptolab.zeptolabchatservice.service.ChannelService;
+import com.zeptolab.zeptolabchatservice.service.ChatService;
 import com.zeptolab.zeptolabchatservice.service.MessageService;
 import com.zeptolab.zeptolabchatservice.service.UserService;
-import com.zeptolab.zeptolabchatservice.service.ChatService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -89,7 +90,7 @@ public class ChatHandler implements EventReceived {
         return (client, data, ackSender) -> {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
-                final Channel channel = channelService.joinOrCreate(user.get(), data);
+                final Channel channel = channelService.joinOrCreate(user.get(), data, client::leaveRoom);
                 final List<ChatEvent> list = messageService.getMessagesByChannelId(channel.getId());
                 client.joinRoom(channel.getName());
                 client.sendEvent(READ_MESSAGE, list.toString());
