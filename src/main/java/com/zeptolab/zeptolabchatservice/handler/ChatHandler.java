@@ -90,11 +90,9 @@ public class ChatHandler implements EventReceived {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
                 final Channel channel = channelService.joinOrCreate(user.get(), data);
-                final List<Message> list = messageService.getMessagesByChannelId(channel.getId());
+                final List<ChatEvent> list = messageService.getMessagesByChannelId(channel.getId());
                 client.joinRoom(channel.getName());
-                if (!list.isEmpty()){
-                    client.sendEvent(READ_MESSAGE, list.toString());
-                }
+                client.sendEvent(READ_MESSAGE, list.toString());
                 log.info("user join to new channel");
             }
 

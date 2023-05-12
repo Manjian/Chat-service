@@ -1,9 +1,11 @@
 package com.zeptolab.zeptolabchatservice.service;
 
-import com.zeptolab.zeptolabchatservice.repositories.repo.MessageRepository;
+import com.zeptolab.zeptolabchatservice.data.ChatEvent;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
+import com.zeptolab.zeptolabchatservice.repositories.repo.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +23,12 @@ public class MessageService {
 
     }
 
-    public List<Message> getMessagesByChannelId(final UUID channelId) {
-        return this.messageRepository.getMessagesByChannelId(channelId).orElse(Collections.emptyList());
+    @Transactional
+    public List<ChatEvent> getMessagesByChannelId(final UUID channelId) {
+        final List<Message> list = this.messageRepository.getMessagesByChannelId(channelId).orElseGet(Collections::emptyList);
+        return list.stream().map(message -> new ChatEvent(message.getMessageType(),
+                message.getContent(),
+                message.getChannel().getName(),
+                message.getMessageOwner())).toList();
     }
 }
