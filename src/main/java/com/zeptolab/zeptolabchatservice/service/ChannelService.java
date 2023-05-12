@@ -2,9 +2,9 @@ package com.zeptolab.zeptolabchatservice.service;
 
 import com.zeptolab.zeptolabchatservice.data.JoinEvent;
 import com.zeptolab.zeptolabchatservice.handler.OnLeaveCallback;
-import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
+import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,17 +26,17 @@ public class ChannelService {
         this.channelRepository = channelRepository;
     }
 
-
     @Transactional
     public synchronized Channel joinOrCreate(final User user,
                                              @NotNull final JoinEvent data) throws IllegalAccessException {
         final Optional<Channel> channelOptional = getChannelByName(data.channel());
         if (channelOptional.isPresent()) {
-            if (channelOptional.get().getUsers().contains(user)) {
+            final Channel channel = channelOptional.get();
+            if (channel.getUsers().contains(user)) {
                 throw new IllegalArgumentException("User already joined to this channel");
-            } else if (channelOptional.get().getUsers().size() < 10) {
-                channelOptional.get().addUser(user);
-                return channelRepository.save(channelOptional.get());
+            } else if (channel.getUsers().size() < 10) {
+                channel.addUser(user);
+                return channelRepository.save(channel);
             } else {
                 throw new IllegalAccessException("user can't join to the target channel");
             }
@@ -46,21 +45,20 @@ public class ChannelService {
             channel.addUser(user);
             return updateChannel(channel);
         }
-
     }
 
-    public void validateUserChannel(final User user, final JoinEvent data, final OnLeaveCallback onLeaveCallback) {
+    public void validateUserChannel(final User user,
+                                    final JoinEvent data,
+                                    final OnLeaveCallback onLeaveCallback) {
         final Channel currentChannel = user.getChannel();
         if (currentChannel != null) {
             final UUID currentChannelId = currentChannel.getId();
             final Optional<Channel> channelOptional = this.getChannelById(currentChannelId);
-            if (channelOptional.isPresent() && (!Objects.equals(channelOptional.get().getName(), data.channel()))) {
+            if (channelOptional.isPresent() && !channelOptional.get().getName().equals(data.channel())) {
                 onLeaveCallback.onChannelLeave(channelOptional.get().getName());
                 log.info("user left his current Channel");
             }
-
         }
-
     }
 
     public Optional<Channel> getChannelByName(final String name) {

@@ -91,13 +91,16 @@ public class ChatHandler implements EventReceived {
             final Optional<User> user = userService.getUserBySessionId(client.getSessionId().toString());
             if (user.isPresent()) {
                 channelService.validateUserChannel(user.get(), data, client::leaveRoom);
-                final Channel channel = channelService.joinOrCreate(user.get(), data);
-                final List<ChatEvent> list = messageService.getMessagesByChannelId(channel.getId());
-                client.joinRoom(channel.getName());
-                client.sendEvent(READ_MESSAGE, list.toString());
-                log.info("user join to new channel");
+                try {
+                    final Channel channel = channelService.joinOrCreate(user.get(), data);
+                    final List<ChatEvent> list = messageService.getMessagesByChannelId(channel.getId());
+                    client.joinRoom(channel.getName());
+                    client.sendEvent(READ_MESSAGE, list.toString());
+                    log.info("user join to new channel");
+                } catch (IllegalAccessException e){
+                    client.sendEvent(READ_MESSAGE,"User is already in the channel");
+                }
             }
-
         };
     }
 

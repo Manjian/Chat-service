@@ -1,15 +1,13 @@
 package com.zeptolab.zeptolabchatservice.service;
 
 import com.zeptolab.zeptolabchatservice.data.LoginEvent;
-import com.zeptolab.zeptolabchatservice.repositories.repo.UserRepository;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Device;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.User;
+import com.zeptolab.zeptolabchatservice.repositories.repo.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -51,7 +49,7 @@ public class UserService {
         final User user;
         if (userOptional.isPresent()) {
             user = userOptional.get();
-            if (Objects.equals(user.getPassword(), loginEvent.password())) {
+            if (user.getPassword().equals(loginEvent.password())) {
                 if (sessionId.equals(user.getSessionId())){
                     log.info("session id is the same {} ", sessionId);
                     return Optional.of(user);
