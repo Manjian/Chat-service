@@ -1,16 +1,6 @@
 package com.zeptolab.zeptolabchatservice.repositories.persistence;
 
-import com.zeptolab.zeptolabchatservice.repositories.type.MessageType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,15 +27,10 @@ public class Message extends BaseEntity {
             nullable = false)
     private Channel channel;
 
-    public Message(final MessageType messageType, final String content, final String messageOwner) {
-        this.messageType = messageType;
+    public Message(final String content, final String messageOwner) {
         this.content = content;
         this.messageOwner = messageOwner;
     }
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "message_type", nullable = false)
-    private MessageType messageType;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -69,7 +54,6 @@ public class Message extends BaseEntity {
                 .appendSuper(true)
                 .append(this.channel, message.channel)
                 .append(this.content, message.content)
-                .append(this.messageType, message.messageType)
                 .append(this.messageOwner, message.messageOwner)
                 .isEquals();
     }
@@ -80,7 +64,6 @@ public class Message extends BaseEntity {
                 .appendSuper(super.hashCode())
                 .append(this.channel)
                 .append(this.content)
-                .append(this.messageType)
                 .append(this.messageOwner)
                 .toHashCode();
     }
@@ -91,7 +74,6 @@ public class Message extends BaseEntity {
                 .appendSuper(super.toString())
                 .append("channel", this.channel)
                 .append("content", this.content)
-                .append("messageType", this.messageType)
                 .append("messageOwner", this.messageOwner)
                 .toString();
     }

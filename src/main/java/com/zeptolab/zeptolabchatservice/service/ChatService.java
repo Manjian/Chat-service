@@ -22,7 +22,8 @@ public class ChatService {
         this.channelService = channelService;
     }
 
-    public synchronized void sendSocketMessage(final SocketIOClient senderClient, final ChatEvent chatEvent) {
+    public synchronized void sendSocketMessage(final SocketIOClient senderClient,
+                                               final ChatEvent chatEvent) {
         for (SocketIOClient client : senderClient.getNamespace().getRoomOperations(chatEvent.channel()).getClients()) {
             if (!client.getSessionId().equals(senderClient.getSessionId())) {
                 client.sendEvent(READ_MESSAGE, chatEvent.text());
@@ -39,7 +40,6 @@ public class ChatService {
             return;
         }
         final Message message = new Message(
-                chatEvent.messageType(),
                 chatEvent.text(),
                 chatEvent.username());
 

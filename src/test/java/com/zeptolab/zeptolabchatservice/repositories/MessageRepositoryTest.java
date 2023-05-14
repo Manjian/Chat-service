@@ -4,7 +4,6 @@ import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import com.zeptolab.zeptolabchatservice.repositories.repo.ChannelRepository;
 import com.zeptolab.zeptolabchatservice.repositories.repo.MessageRepository;
-import com.zeptolab.zeptolabchatservice.repositories.type.MessageType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class MessageRepositoryTest {
     void getMessageByChannelIdTest() {
         //preparation
         final Channel channel = getSavedChannel();
-        final Message message = new Message(MessageType.CLIENT, "content", "owner");
+        final Message message = new Message( "content", "owner");
         message.setChannel(channel);
 
         repository.save(message);

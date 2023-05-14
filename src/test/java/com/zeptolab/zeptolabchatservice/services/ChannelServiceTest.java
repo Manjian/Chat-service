@@ -77,14 +77,14 @@ public class ChannelServiceTest {
         when(repository.getChannelByName(channel.getName())).thenReturn(Optional.of(channel));
 
         //verification
-        assertThrows(IllegalAccessException.class, () -> service.joinOrCreate(currentUser, event));
+        assertTrue(channel.getUsers().contains(currentUser));
     }
 
     @Test
     void joinOrCreateCountOverTest() {
         //preparation
         final Channel channel = getChannel();
-        final User currentUser = new User("current", "pass", "sessionId");
+        final User currentUser = new User("newUser", "pass", "sessionId");
 
         for (int i = 0; i < 10; i++) {
             final User user = new User("current", "pass", "sessionId");

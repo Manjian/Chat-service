@@ -2,20 +2,23 @@
 - The only requirement for the project is Java 17.
 
 ## Build
-
 To build and run all tests just run following command in root directory of project:
 ```shell
 ./gradlew clean check
 ```
 
 ## Running
-
 Run following command in root directory of project to start application:
 ```shell
 ./gradlew bootRun
 ```
 Or you can use any code editor that supports JVM-based languages, such as [IntelliJ IDEA ](https://www.jetbrains.com/idea/) from jetbrains with Spring [plugin](https://plugins.jetbrains.com/plugin/20221-spring)
 
+## Stop
+Run following command in root directory of project to stop application:
+```shell
+./gradlew --stop
+```
 
 ## H2 Database
 To access to H2 Dashboard which been enabled
@@ -74,7 +77,6 @@ Connect to [ws://localhost:8085](ws://localhost:8085) the project will run on 80
 - **/send_message** This namespace will accept a new chat message from the client.
 ```json
 {
-   "messageType" :"CLIENT",
    "text" : "Hello world", 
    "channel":  "My World",  
    "username": "John"

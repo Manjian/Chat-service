@@ -4,7 +4,6 @@ import com.zeptolab.zeptolabchatservice.data.ChatEvent;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Channel;
 import com.zeptolab.zeptolabchatservice.repositories.persistence.Message;
 import com.zeptolab.zeptolabchatservice.repositories.repo.MessageRepository;
-import com.zeptolab.zeptolabchatservice.repositories.type.MessageType;
 import com.zeptolab.zeptolabchatservice.service.MessageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class MessageServiceTest {
     @Test
     void getMessageByChannelIdTest() {
         //preparation
-        final Message message = new Message(MessageType.CLIENT, "content", "owner");
+        final Message message = new Message("content", "owner");
         message.setChannel(new Channel());
         final UUID channelId = UUID.randomUUID();
 

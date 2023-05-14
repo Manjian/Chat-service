@@ -16,7 +16,6 @@ create table t_message
 (
     id            varchar(36) primary key,
     content       varchar(255) not null,
-    message_type  varchar(36)  not null,
     message_owner varchar(36)  not null,
 
     channel_id    varchar(36) references t_channel (id) on update cascade on delete cascade,

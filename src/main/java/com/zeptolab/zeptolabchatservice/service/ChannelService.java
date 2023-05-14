@@ -30,7 +30,9 @@ public class ChannelService {
         final Optional<Channel> channelOptional = getChannelByName(data.channel());
         if (channelOptional.isPresent()) {
             final Channel channel = channelOptional.get();
-            if (channel.getUsers().size() < 10 && !channel.getUsers().contains(user)) {
+            if (channel.getUsers().contains(user)){
+                return channel;
+            } else if (channel.getUsers().size() < 10 ) {
                 channel.addUser(user);
                 return channelRepository.save(channel);
             } else {

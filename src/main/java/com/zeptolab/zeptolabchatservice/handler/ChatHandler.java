@@ -69,6 +69,7 @@ public class ChatHandler implements EventReceived {
             final Device device = new Device(client.getRemoteAddress().toString());
             final Optional<User> hasAccount = userService.insertOrUpdate(data, device, client.getSessionId().toString());
             if (hasAccount.isEmpty()) {
+                client.sendEvent(READ_MESSAGE, "Can't login something went wrong");
                 return;
             }
             if (hasAccount.get().getChannel() != null) {

@@ -52,6 +52,7 @@ public class UserService {
                     log.info("session id is the same {} ", sessionId);
                     return Optional.of(user);
                 } else {
+                    validateIsSessionUse(sessionId);
                     user.setSessionId(sessionId);
                     user.addDevice(device);
                     return Optional.of(this.save(user));
@@ -67,6 +68,12 @@ public class UserService {
             return Optional.of(this.save(user));
         }
 
+    }
+
+    private void validateIsSessionUse(final String sessionId) {
+        // new login been done with the same session
+        final Optional<User> optionalUser = getUserBySessionId(sessionId);
+        optionalUser.ifPresent(user -> user.setSessionId(""));
     }
 
     public void validateChannelAccess(final User user) throws IllegalStateException {
